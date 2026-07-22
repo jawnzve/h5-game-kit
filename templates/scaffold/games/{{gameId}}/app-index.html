@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>{{gameName}}</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script src="/core/bridge/hybirdapp-plugin.js"></script>
+  <script>
+    (function () {
+      if (window.hybirdapp) {
+        try {
+          var empty = function () {};
+          if (window.hybirdapp.willEnterForeground) window.hybirdapp.willEnterForeground(empty);
+          if (window.hybirdapp.didEnterBackground) window.hybirdapp.didEnterBackground(empty);
+          if (window.hybirdapp.willResume) window.hybirdapp.willResume(empty);
+          if (window.hybirdapp.willPause) window.hybirdapp.willPause(empty);
+          if (window.hybirdapp.im) window.hybirdapp.im(empty);
+          if (window.hybirdapp.onAIGameDevice) window.hybirdapp.onAIGameDevice(empty);
+        } catch (e) {}
+      }
+    })();
+  </script>
+  <script src="/core/utils/http-config.js"></script>
+  <script>window.__GAME_ID__ = '{{gameId}}';</script>
+  <script src="/core/vendor/zepto.min.js"></script>
+  <script src="/core/vendor/base64.js"></script>
+  <script src="/core/vendor/MD5.js"></script>
+  <script src="/core/components/web-toast.js"></script>
+  <script src="/core/components/web-alert.js"></script>
+  <script src="/core/components/web-loading.js"></script>
+  <script src="/core/components/web-input.js"></script>
+  <script src="/core/components/web-lottie.js"></script>
+  <script src="/core/utils/server-time-sync.js"></script>
+  <script src="/core/utils/http-request.js"></script>
+  <script src="/core/utils/throttle-utils.js"></script>
+  <script src="/core/utils/game-sync.js"></script>
+  <script src="/core/utils/track-log.js"></script>
+  <script type="module" src="/src/entries/app-main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+# 忽略测试输出
+last-run.json
+
+# scaffold 本地验证产物（模板源码不应提交）
+templates/scaffold/node_modules/
+templates/scaffold/dist/
+templates/scaffold/*.tsbuildinfo
+templates/scaffold/vite.config.js
+templates/scaffold/vite.config.d.ts

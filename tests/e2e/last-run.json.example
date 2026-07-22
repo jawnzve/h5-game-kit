@@ -1,0 +1,11 @@
+{
+  "startedAt": "2026-01-01T00:00:00.000Z",
+  "finishedAt": "2026-01-01T00:00:01.000Z",
+  "testTitle": "example",
+  "status": "failed",
+  "console": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "gameLog": null,
+  "errors": []
+}

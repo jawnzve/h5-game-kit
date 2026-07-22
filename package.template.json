@@ -1,0 +1,10 @@
+{
+  "devDependenciesComments": "scaffold package.json 已含 @playwright/test；此处供旧仓补依赖",
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  },
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  }
+}
