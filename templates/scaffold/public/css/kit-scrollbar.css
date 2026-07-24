@@ -1,0 +1,29 @@
+/**
+ * Kit 通用滚动条样式（WebKit + Firefox）
+ * 真源：h5-game-loop-kit/templates/scaffold/public/css/kit-scrollbar.css
+ * 用法：可滚动容器添加 class="kit-scrollbar"
+ */
+.kit-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.1);
+}
+
+.kit-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.kit-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.kit-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.kit-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}

@@ -27,7 +27,7 @@
                 padding: 14px 16px;
                 border-radius: 12px;
                 font-size: 14px;
-                font-weight: 400;
+                font-weight: normal;
                 box-sizing: border-box;
                 transition: all 0.15s ease;
                 -webkit-appearance: none;

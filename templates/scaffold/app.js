@@ -37,10 +37,15 @@ function getLocalIP() {
 
 const server = app.listen(PORT, '0.0.0.0', () => {
   const localIP = getLocalIP();
+  const appPath = `/games/${GAME_ID}/app-index.html`;
+  const previewPath = '/preview/preview-index.html';
   console.log('Web 静态服已启动（托管 dist/；API 由 http-config 按域名选择）');
-  console.log(`App:     http://localhost:${PORT}/games/${GAME_ID}/app-index.html`);
-  console.log(`Preview: http://localhost:${PORT}/preview/preview-index.html`);
-  console.log(`局域网:  http://${localIP}:${PORT}/games/${GAME_ID}/app-index.html`);
+  console.log('');
+  console.log(`App（本地）:     http://localhost:${PORT}${appPath}`);
+  console.log(`Preview（本地）: http://localhost:${PORT}${previewPath}`);
+  console.log(`App（局域网）:     http://${localIP}:${PORT}${appPath}`);
+  console.log(`Preview（局域网）: http://${localIP}:${PORT}${previewPath}`);
+  console.log('');
 });
 
 server.on('error', (err) => {

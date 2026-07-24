@@ -55,6 +55,7 @@
   4. **省略/均分**：需省略或均分的 flex 子项设 `min-width: 0`；双按钮均分用 `flex: 1 1 0`，勿 `width: 100%` 硬撑
   5. **描边字**：避免 `-webkit-text-stroke` + `paint-order`；用 `text-shadow` 模拟
   6. **其它惯例**：可滚容器加 `-webkit-overflow-scrolling: touch`；控件 `appearance: none`；交互区去 tap 高亮 / 禁长按选中（按需）
+  7. **字重**：**勿**用数值 `font-weight`（如 `400`/`500`/`600`/`700`/`800`）；部分 **Android WebView** 对数值字重映射异常或不生效。常规文案用 `normal`，加粗用 `bold`
 - **参考**：ito `compatibility-notes.md`；witchs-poison / aeroplane-chess / event-anniversary 的 `shared-styles` 注释
 - **状态**：active
 

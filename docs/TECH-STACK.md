@@ -35,6 +35,7 @@
 ├── tsconfig.json
 ├── public/                         # 不经过 Vite transform 的静态资源
 │   ├── core/                       # 桥 / http / UI 运行时（自 scaffold 拷贝）
+│   ├── css/                        # kit 通用样式（如 kit-scrollbar.css）
 │   └── games/<gameId>/assets/
 ├── dist/                           # npm run build 产出；npm start 托管此目录
 │   └── games/<gameId>/
@@ -160,6 +161,15 @@ Playwright `baseURL` 指向 `npm start` 的静态服（默认端口 3100，见 `
 3. 全 TS 化需同步重写 http 管线并改 E2E 注入顺序，收益小于维护成本。
 
 **游戏侧约定**：Toast / Loading / Lottie / Input 一律从 `@/lib/ui` 或 `@/composables/useLottie` 调用，不要在 SFC 里散落 `window.showToast`。
+
+### 5.5.1 通用滚动条（`kit-scrollbar.css`）
+
+| 项 | 约定 |
+|----|------|
+| 真源 | `templates/scaffold/public/css/kit-scrollbar.css` |
+| 同步 | `sync-kit.ps1` 覆盖 `public/css/kit-*.css`（不删游戏自有 css） |
+| 引入 | `preview-index.html` / `app-index.html` 的 `<head>` 加 `<link href="/css/kit-scrollbar.css">` |
+| 用法 | 可滚动容器加 class **`kit-scrollbar`**（WebKit + Firefox 细滚动条，配色参考 aeroplane-chess） |
 
 ### 5.6 往 kit 加新通用能力：用 TS 还是 JS？
 

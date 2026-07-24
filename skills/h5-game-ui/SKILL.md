@@ -6,6 +6,11 @@ description: >-
 ---
 # h5-game-ui
 
+## 流程位置
+
+**② H5 UI** — `product.md` 确认后；产出 **Preview + App 壳**。  
+（Loop 主流程：① product → **② UI** → ③ 等后端 → ④ 功能 → ⑤ L2；**不是**第 ③ 步。）
+
 ## 技术栈（必须）
 
 见 `h5-game-loop-kit/docs/TECH-STACK.md` §9：
@@ -14,14 +19,10 @@ description: >-
 - **双入口**：**Preview**（mock 验收）+ **App**（`games/<gameId>/app-index.html`）
 - 静态构建进 **`dist/`**；`npm start` 托管 dist
 
-## 流程位置
-
-**② H5 UI** — product 确认后；产出 **Preview + App 壳**，④ 再在 App 版接真数据。
-
 ## 前置
 
-- **`product.md` 已确认**
-- 无 Vite 骨架 → 提示运行 `new-game.ps1`，**停止**，不编造 `app.js`
+- **`product.md` 已确认**（v2 结构：§3 组件 + §4+ 阶段矩阵）
+- 无 Vite 骨架 → 提示运行 `init-game.ps1` / `new-game.ps1`，**停止**，不编造 `app.js`
 - 新建游戏 **http-config**：默认 witchs-poison 预设，**须询问用户**是否沿用（见 TECH-STACK §9）
 
 ## 输出
@@ -31,55 +32,52 @@ description: >-
 - `src/stages/*.vue`、`src/components/` — App 与 Preview **复用**
 - `data-testid` = product **§3 组件** 与 **§4+ 阶段矩阵** 中的元素 ID
 
-### Preview 版（给你确认 UI）
+### Preview 版（人工验收 UI）
 
 - 入口：`preview/preview-index.html` → `src/entries/preview-main.ts`
-- Pinia **mock**：可切换 **阶段、状态、身份/视角**（覆盖 product §4+ 视角·元素矩阵）
-- **不**调用真实 REST/IM；不依赖 `im.md` 业务字段
+- **外壳规范**：必读 **`docs/PREVIEW-UI-SPEC.md`**
+  - 左侧 `preview-panel`：阶段 / 视角 / **调试（尺寸）** / **分阶段 Mock**（无 Mock 不显示）
+  - 右侧 **可调尺寸手机视口**（默认 iPhone SE 375×667，`preview-phone-viewport`）+ 外侧桌面底色
+  - 内嵌 `GameShell`，与 App **共用**阶段 SFC
+- Pinia **`preview` store**：mock 阶段、视角、矩阵所需状态
+- **`src/lib/preview-mock-controls.ts`**：各阶段可见 Mock 项映射
+- **`useGameView()`**：Preview / App 分流（`GAME_VIEW_MODE_KEY`）
+- **不**调用 REST/IM；**不**依赖 `im.md` 业务字段
 
 ### App 版（正式壳）
 
 - 入口：`games/<gameId>/app-index.html` → `src/entries/app-main.ts`
-- ② 仅 UI + store 空壳/占位 mock；预留 `src/services/`、`src/stores/game.ts` 钩子
-- ④ 在此入口接 **远端** IM/REST（按文档，**不连本机 API**）
+- ② 仅 UI + `game` store 空壳；预留 `src/services/` 钩子
+- **不含** Preview 侧栏与桌面底色
+- ④ 接远端 IM/REST
 
 ## 禁止
 
 - ② 在 App 版接真实 IM/REST（属 ④）
 - Preview 依赖 `im.md` 写业务解析
 - 跳过 product §3 / §4+ 发明元素
+- Playwright L2 测 preview 页
 
 ## 步骤
 
-1. 读 product **§1 概述**、**§2 全局**、**§3 组件**、**§4+ 各阶段矩阵**
-2. 实现共用 SFC（交互类型：可见 / 可点击 / 可输入 / 可滚动 等与矩阵一致）
-3. 实现 **Preview**：阶段/状态/视角切换面板 + mock 数据
-4. 实现 **App 壳**：`app-index` 路由/阶段分支 + 空 store
-5. `npm run dev` 可开 Preview；`npm run build` 产出 dist 两入口
-6. 请你用 **Preview** 确认 UI；确认后并行 ③ 等契约
+1. 读 **`docs/PREVIEW-UI-SPEC.md`** + product **§1 概述**、**§2 全局**、**§3 组件**、**§4+ 矩阵**
+2. 实现共用 SFC（交互类型与矩阵一致：可见 / 可点击 / 可输入 / 可滚动）
+3. 实现 **GameLayout**（Logo 中英文、独立阶段条；按需 `variant` 如 ready 底栏）
+4. 实现 **PreviewApp**（§PREVIEW-UI-SPEC 外壳 + 阶段/视角/Mock）
+5. 编写 **`preview-mock-controls.ts`**（Mock 项与阶段矩阵对齐）
+6. 实现 **App 壳** + 空 `game` store
+7. `npm run build`；可选 `scripts/smoke-preview.mjs` 冒烟
+8. 请用户在 **Preview** 验收；通过后并行 ③ 等契约
 
 ## 通用 UI（scaffold 已含）
 
-- **Toast / Alert / Loading / Input**：`public/core/components/*.js`（运行时全局）+ `src/lib/ui.ts`
-- **Lottie**：**ito 实战版** `web-lottie.js`；用法见 `public/assets/anim/lottie-usage-guide.md`
-- **Vue 3**：`useLottie()` composable；App 壳 `LottieCanvas.vue`
-- **JS 不整体迁 TS**：script 顺序与 `http-request` 依赖见 `public/core/components/README.md`
-
-```typescript
-import { useLottie } from '@/composables/useLottie';
-import { DEFAULT_LOTTIE_CANVAS_ID } from '@/lib/ui';
-
-const fx = useLottie({
-  instanceId: 'confetti',
-  canvasId: DEFAULT_LOTTIE_CANVAS_ID,
-  src: '/assets/anim/Confetti.lottie',
-  destroyOnUnmount: false,
-});
-await fx.preload(); // loading 阶段
-await fx.play();    // 结算：复用 show，不重复拉文件
-```
+- **Toast / Alert / Loading / Input**：`public/core/components/*.js` + `src/lib/ui.ts`
+- **Lottie**：`useLottie()` + `LottieCanvas.vue`
+- **Preview 调试尺寸**：`PreviewDevicePanel` + `preview-devices.ts`（scaffold 已含；游戏专属调试放 `PreviewDevPanel`）
 
 ## 参考
 
+- **Preview 规范**：`h5-game-loop-kit/docs/PREVIEW-UI-SPEC.md`
+- **完整示例**：werewords 仓库（`PreviewApp.vue`、`GameLayout.vue`、`PlayerList.vue`）
 - `TECH-STACK.md` §9、`LOCAL-SERVER-SPEC.md`
-- `product-doc.example.md`
+- `product-doc.example.md`（werewords 在 kit `docs/templates/`）

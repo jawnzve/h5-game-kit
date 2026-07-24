@@ -84,6 +84,22 @@
 - `npm start`：仅静态服，无环境参数  
 - Playwright `webServer.command`：`npm start`
 
+### 6.1 启动日志（App / Preview × 本地 / 局域网）
+
+`npm run dev` 与 `npm start` 启动后均打印 **4 行完整 URL**（格式一致）：
+
+```
+App（本地）:     http://localhost:<port>/games/<gameId>/app-index.html
+Preview（本地）: http://localhost:<port>/preview/preview-index.html
+App（局域网）:     http://<局域网IP>:<port>/games/<gameId>/app-index.html
+Preview（局域网）: http://<局域网IP>:<port>/preview/preview-index.html
+```
+
+| 命令 | 实现位置 | 默认端口 |
+|------|----------|----------|
+| `npm run dev` | `vite-plugins/print-dev-entry-urls.ts`（Vite 插件，覆盖默认 printUrls） | 5173 |
+| `npm start` | `app.js` listen 回调 | 3100 |
+
 ---
 
 ## 7. E2E（Playwright）— 只测 **App 版**
@@ -110,6 +126,8 @@
 | 项 | 路径 |
 |----|------|
 | 静态服 | `templates/scaffold/app.js` |
+| 开发服 URL 日志 | `templates/scaffold/vite-plugins/print-dev-entry-urls.ts` |
+| Vite 配置 | `templates/scaffold/vite.config.ts` |
 | 脚本 | `templates/scaffold/package.json` |
 | http-config | `templates/scaffold/public/core/utils/http-config.js` |
 | http-request / track-log / server-time / throttle | `templates/scaffold/public/core/utils/` + `vendor/` |

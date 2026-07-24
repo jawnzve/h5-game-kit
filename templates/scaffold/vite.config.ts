@@ -1,11 +1,12 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { fileURLToPath, URL } from 'node:url';
+import { printDevEntryUrls } from './vite-plugins/print-dev-entry-urls';
 
 const gameId = '{{gameId}}';
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), printDevEntryUrls(gameId)],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

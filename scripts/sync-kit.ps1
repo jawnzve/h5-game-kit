@@ -71,6 +71,17 @@ New-Item -ItemType Directory -Path $scriptsDst -Force | Out-Null
 Copy-Item (Join-Path $KitRoot 'scripts\run-e2e.ps1') (Join-Path $scriptsDst 'run-e2e.ps1') -Force
 Write-Host "[sync] scripts/run-e2e.ps1"
 
+# 通用 CSS（kit-scrollbar 等，不覆盖游戏自有 public/css）
+$cssSrc = Join-Path $KitRoot 'templates\scaffold\public\css'
+$cssDst = Join-Path $Target 'public\css'
+if (Test-Path $cssSrc) {
+    New-Item -ItemType Directory -Path $cssDst -Force | Out-Null
+    Get-ChildItem -Path $cssSrc -Filter 'kit-*.css' | ForEach-Object {
+        Copy-Item $_.FullName (Join-Path $cssDst $_.Name) -Force
+        Write-Host "[sync] public/css/$($_.Name)"
+    }
+}
+
 # 通用踩坑只读镜像
 $lessonsSrc = Join-Path $KitRoot 'docs\LESSONS.md'
 $lessonsMirror = Join-Path $Target 'docs\KIT-LESSONS.md'
