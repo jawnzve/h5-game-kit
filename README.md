@@ -2,6 +2,8 @@
 
 语音房 H5 游戏的 **AI Loop 工具链起点包**：Skill、Rule、测试脚手架、文档模板。
 
+[[_TOC_]]
+
 **Git 仓库**（两处同源，`origin` 为 GitHub）：
 
 - GitHub：https://github.com/jawnzve/h5-game-kit.git
