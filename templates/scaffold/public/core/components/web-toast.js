@@ -7,32 +7,47 @@
 (function (window) {
     'use strict';
 
-    const TOAST_CONTAINER_ID = 'web-toast-container';
+    const TOAST_CONTAINER_ATTR = 'data-web-toast-container';
     const DEFAULT_DURATION = 2000;
-    // 仅保留一个全局Toast实例与定时器
-    let CURRENT_TOAST = null;
-    let CURRENT_TIMER = null;
+    /** @type {WeakMap<HTMLElement, { toast: HTMLElement | null, timer: ReturnType<typeof setTimeout> | null }>} */
+    const containerState = new WeakMap();
 
-    function getOrCreateToastContainer() {
-        let container = document.getElementById(TOAST_CONTAINER_ID);
+    function getToastMountRoot(explicitRoot) {
+        if (explicitRoot instanceof HTMLElement) return explicitRoot;
+        const root = document.querySelector('[data-toast-root]');
+        return root instanceof HTMLElement ? root : document.body;
+    }
+
+    function getContainerState(container) {
+        let state = containerState.get(container);
+        if (!state) {
+            state = { toast: null, timer: null };
+            containerState.set(container, state);
+        }
+        return state;
+    }
+
+    function getOrCreateToastContainer(mountRoot) {
+        let container = mountRoot.querySelector(`[${TOAST_CONTAINER_ATTR}]`);
+
         if (!container) {
             container = document.createElement('div');
-            container.id = TOAST_CONTAINER_ID;
+            container.setAttribute(TOAST_CONTAINER_ATTR, '');
+            const onBody = mountRoot === document.body;
             Object.assign(container.style, {
-                position: 'fixed',
+                position: onBody ? 'fixed' : 'absolute',
                 top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
+                left: '0',
+                right: '0',
+                transform: 'translateY(-50%)',
                 zIndex: '10000',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 pointerEvents: 'none',
-                width: '100%',
-                maxWidth: '80vw'
             });
-            document.body.appendChild(container);
+            mountRoot.appendChild(container);
         }
         return container;
     }
@@ -64,21 +79,23 @@
         return toast;
     }
 
-    window.showToast = function (message, type = 'info', duration = DEFAULT_DURATION) {
-        const container = getOrCreateToastContainer();
+    window.showToast = function (message, type = 'info', duration = DEFAULT_DURATION, mountRoot) {
+        const root = getToastMountRoot(mountRoot);
+        const container = getOrCreateToastContainer(root);
+        const state = getContainerState(container);
 
-        // 若存在正在显示的Toast，则先移除并清理其定时器（新的一条顶掉上一条）
-        if (CURRENT_TIMER) {
-            clearTimeout(CURRENT_TIMER);
-            CURRENT_TIMER = null;
+        // 同一挂载根内：新的一条顶掉上一条
+        if (state.timer) {
+            clearTimeout(state.timer);
+            state.timer = null;
         }
-        if (CURRENT_TOAST && CURRENT_TOAST.parentNode) {
-            CURRENT_TOAST.parentNode.removeChild(CURRENT_TOAST);
+        if (state.toast && state.toast.parentNode) {
+            state.toast.parentNode.removeChild(state.toast);
         }
 
         const toast = createToastElement(message, type);
         container.appendChild(toast);
-        CURRENT_TOAST = toast;
+        state.toast = toast;
 
         // 显示动画
         setTimeout(() => {
@@ -87,23 +104,23 @@
         }, 10);
 
         // 自动隐藏
-        CURRENT_TIMER = setTimeout(() => {
-            hideToast(toast);
+        state.timer = setTimeout(() => {
+            hideToast(toast, container);
         }, duration);
 
         // 点击手动关闭
         toast.addEventListener('click', () => {
-            if (CURRENT_TIMER) {
-                clearTimeout(CURRENT_TIMER);
-                CURRENT_TIMER = null;
+            if (state.timer) {
+                clearTimeout(state.timer);
+                state.timer = null;
             }
-            hideToast(toast);
+            hideToast(toast, container);
         });
 
         return toast;
     };
 
-    function hideToast(toast) {
+    function hideToast(toast, container) {
         if (!toast || !toast.parentNode) return;
 
         toast.style.opacity = '0';
@@ -113,8 +130,9 @@
             if (toast.parentNode) {
                 toast.parentNode.removeChild(toast);
             }
-            if (toast === CURRENT_TOAST) {
-                CURRENT_TOAST = null;
+            const state = containerState.get(container);
+            if (state && toast === state.toast) {
+                state.toast = null;
             }
         }, 300);
     }

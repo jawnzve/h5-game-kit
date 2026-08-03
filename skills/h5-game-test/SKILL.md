@@ -50,7 +50,7 @@ description: >-
 
 ## Loop Prompt
 
-见 `h5-game-loop-kit/loop/LOOP-PROMPT.md`
+见 `h5-game-kit/loop/LOOP-PROMPT.md`
 
 ## Helpers
 

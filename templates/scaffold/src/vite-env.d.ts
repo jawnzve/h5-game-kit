@@ -50,10 +50,13 @@ interface GameSyncModule {
 interface InputFieldHandle {
   container: HTMLElement;
   input: HTMLInputElement;
+  counter: HTMLElement | null;
   getValue: () => string;
   setValue: (val: string) => void;
   destroy: () => void;
   mountTo: (parent: HTMLElement) => void;
+  focus: () => void;
+  blur: () => void;
 }
 
 interface LottiePlayerModule {
@@ -86,7 +89,12 @@ interface LottiePlayerModule {
 
 interface Window {
   __GAME_ID__?: string;
-  showToast?: (message: string, type?: string, duration?: number) => void;
+  showToast?: (
+    message: string,
+    type?: string,
+    duration?: number,
+    mountRoot?: HTMLElement
+  ) => void;
   showTip?: (message: string, type?: string, duration?: number) => void;
   showAlert?: (
     title: string | Record<string, unknown>,

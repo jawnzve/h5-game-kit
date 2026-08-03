@@ -1,7 +1,7 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
-  从 h5-game-loop-kit 初始化语音房 H5 游戏仓库的 Loop 工具链。
+  从 h5-game-kit 初始化语音房 H5 游戏仓库的 Loop 工具链。
 
 .EXAMPLE
   & "<kit-root>\scripts\init-game.ps1" `
@@ -40,7 +40,7 @@ function Copy-Tree($From, $To) {
 # .cursor/rules
 $rulesDst = Join-Path $Target '.cursor\rules'
 New-Item -ItemType Directory -Path $rulesDst -Force | Out-Null
-Copy-Item (Join-Path $KitRoot 'rules\h5-game-loop.mdc') (Join-Path $rulesDst 'h5-game-loop.mdc') -Force
+Copy-Item (Join-Path $KitRoot 'rules\h5-game-kit.mdc') (Join-Path $rulesDst 'h5-game-kit.mdc') -Force
 
 # .cursor/skills（可选）
 if ($InstallSkills) {
@@ -68,6 +68,7 @@ Copy-Item (Join-Path $KitRoot 'tests\e2e\last-run.json.example') (Join-Path $e2e
 $scriptsDst = Join-Path $Target 'scripts'
 New-Item -ItemType Directory -Path $scriptsDst -Force | Out-Null
 Copy-Item (Join-Path $KitRoot 'scripts\run-e2e.ps1') (Join-Path $scriptsDst 'run-e2e.ps1') -Force
+Copy-Item (Join-Path $KitRoot 'scripts\fix-product-md-anchors.mjs') (Join-Path $scriptsDst 'fix-product-md-anchors.mjs') -Force
 
 # playwright config if missing
 $pwConfig = Join-Path $Target 'playwright.config.js'

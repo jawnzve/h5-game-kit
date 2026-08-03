@@ -32,21 +32,45 @@ Preview 用于**人工验收布局与元素**；③ 未齐时可在 ② 结束�
 
 ## 3. Preview 外壳结构（必须）
 
+Preview 是**多视口工作台**：同一局状态下并排渲染多个手机视口，每个视口一个视角，可直接横向对比「村长看到什么 / 观众看到什么」。
+
 ```
-preview-shell
-├── aside.preview-panel          # 左侧：阶段 / 视角 / 调试 / Mock（仅开发用）
-└── div.preview-device-area      # 外侧桌面底色（区分非手机区域）
-    └── div.preview-phone        # 可调尺寸手机视口，data-testid=preview-phone-viewport
-        ├── main.preview-stage   # data-testid=stage-{stageId}
-        │   └── GameShell        # 与 App 共用阶段 SFC
-        └── LottieCanvas         # 可选
+preview-shell                          # 整屏 flex，html/body overflow:hidden
+├── aside.preview-panel                # 左侧 260px：阶段 / 视口 / 调试 / Mock
+└── div.preview-device-area            # 外侧桌面底色，overflow:auto（横向滚动）
+    └── div.preview-viewports-row      # TransitionGroup，视口横排
+        └── PreviewPhoneViewport ×N    # 每视口独立视角
+            ├── div.viewport-header    # 视角下拉 + ← / → 排序 + × 移除
+            └── div.preview-phone      # data-toast-root，尺寸由侧栏统一控制
+                ├── main.preview-stage # data-testid=stage-{stageId}
+                │   └── GameShell      # 与 App 共用阶段 SFC
+                └── LottieCanvas       # 可选
 ```
 
 **样式约定**
 
-- `preview-device-area`：灰蓝桌面背景，居中手机框；`overflow: auto`（大机型可滚动）
-- `preview-phone`：默认 **375×667**（iPhone SE）；宽高由侧栏 **调试 → 尺寸** 切换，`:style` 绑定；游戏背景色，圆角 + 阴影
+- `preview-shell`：`height: 100vh`；`html / body / #app` 设 `overflow: hidden`，滚动交给侧栏与视口区
+- `preview-device-area`：灰蓝桌面背景；`overflow: auto`，视口多时横向滚动
+- `preview-phone`：默认 **390×844**（iPhone 12 Pro）；宽高由侧栏 **调试 → 尺寸** 统一切换，`:style` 绑定；游戏背景色，圆角 + 阴影
 - `preview-panel`：固定宽度侧栏（260px），不参与「手机 UI」截图
+
+**视口标识（供 smoke / 人工定位）**
+
+| 属性 | 值 |
+|------|-----|
+| `data-perspective` | 该视口当前视角 ID |
+| `data-testid`（首个视口） | `preview-phone-viewport` |
+| `data-testid`（其余视口） | `preview-viewport-{viewportId}` |
+
+### 3.1 视角下传与视口级 toast
+
+| 机制 | 实现 |
+|------|------|
+| 视角 | `PreviewPhoneViewport` `provide(PREVIEW_PERSPECTIVE_KEY, perspectiveRef)`；阶段 SFC 用 `useGameView()` 取本视口视图 |
+| 局状态 | 全部视口**共享** `preview` store 的局状态；仅「只有本人可见」的部分放 `perViewState[perspective]` |
+| toast | 视口根节点标 `data-toast-root` 并 `provide(TOAST_ROOT_KEY, phoneRef)`；SFC 内用 `useViewportToast()`，toast 落在**本视口**而非整屏中央 |
+
+App 壳（`App.vue`）同样标 `data-toast-root`，两端行为一致。
 
 ---
 
@@ -84,11 +108,12 @@ preview-shell
 
 ## 6. Mock 侧栏
 
-### 6.1 阶段 / 视角
+### 6.1 阶段 / 视口
 
-- 阶段下拉：`ALL_STAGES`（来自 `product.md` §2.1）
-- 视角下拉：覆盖 product **§1 整局流程** 各段视角（如创建者 / 已加入 / 观众，或身份列）
-- 视角标签随阶段变化（例：准备阶段仅「创建者」，非「创建者/村长」）
+- **阶段下拉**：`ALL_STAGES`（来自 `product.md` §2.1）；选项文案为 **`stageId（中文名）`**，如 `day（天亮了）`，不另起中文行
+- **视口 fieldset**（`PreviewViewportPanel`）：选新视口视角 + 「+ 添加视口」+ 当前视口数
+- **视角切换**在各视口顶栏，不在侧栏；侧栏没有全局视角下拉
+- 视角列表来自 `src/lib/preview-perspectives.ts`，须覆盖 product **§1 整局流程** 各段视角；默认为每个视角开一个视口
 
 ### 6.2 分阶段 Mock 开关
 
@@ -106,37 +131,46 @@ export const PREVIEW_MOCK_BY_STAGE: Partial<Record<StageId, PreviewMockControlId
 
 ### 6.3 数据与视角
 
-- `useGameView()`：`inject(GAME_VIEW_MODE_KEY)` → Preview 用 `preview` store，App 用 `game` store
-- `isMayor` / 村长徽章等与 **当前阶段** 一致，禁止在 `ready` 阶段因视角 preset 误显示村长
+- `useGameView()`：`inject(GAME_VIEW_MODE_KEY)` → Preview 走 `usePreviewView(本视口视角)`，App 走 `game` store
+- 身份类派生状态（如村长徽章）必须与 **当前阶段** 一致，禁止在 `ready` 阶段因视角 preset 误显示
+- 切视角 / 切阶段时由 `applyPerspectivePreset()` 同步本视口默认状态
 
-### 6.4 调试 → 尺寸（kit 通用）
+### 6.4 调试（kit 通用）
 
-侧栏 **fieldset「调试」** 内，`PreviewDevicePanel` 提供机型预设与自定义宽高：
+侧栏 **fieldset「调试」** 提供：
+
+| 控件 | 实现 | 说明 |
+|------|------|------|
+| 玩家数量 | `preview` store `mockPlayerCount` + `src/mock/players.ts` | 0–8 人，联动 mock 玩家池 |
+| 尺寸 | `PreviewDevicePanel` + `src/lib/preview-devices.ts` | 机型预设与自定义宽高，作用于**全部视口** |
 
 | 预设 | 逻辑分辨率 |
 |------|------------|
 | iPhone 14 Pro Max | 430×932 |
-| iPhone 12 Pro | 390×844 |
+| iPhone 12 Pro（默认） | 390×844 |
 | iPhone XR | 414×896 |
-| iPhone SE（默认） | 375×667 |
+| iPhone SE | 375×667 |
 | 自定义设备… | 宽 280–800、高 400–1200 |
 
-- 状态：`preview` store 的 `previewPhoneWidth` / `previewPhoneHeight`
-- 实现：`src/lib/preview-devices.ts` + `src/components/PreviewDevicePanel.vue`
-- **游戏独有**调试项（如玩家数量）放 `PreviewDevPanel.vue`，**不要**写进 kit 通用层
+**游戏独有**调试项放 `PreviewDevPanel.vue`，**不要**写进 kit 通用层。
+
+### 6.5 Mock 玩家池
+
+`src/mock/players.ts` 提供 8 人池，前 4 人刻意覆盖 **中文短 / 中文长 / 英文短 / 英文长** 四类昵称，用于在 Preview 就暴露截断、换行、头像错位问题。超长昵称截断用 `src/lib/nickname.ts` 的 `truncateNickname()`。
 
 ---
 
 ## 7. ② 实施检查清单
 
 1. 读 `product.md` §1～§3、§4+ 各阶段矩阵  
-2. 实现共用 SFC + `data-testid`  
-3. **PreviewApp**：§3 外壳 + 阶段/视角切换  
-4. **`preview-mock-controls.ts`**：按阶段矩阵配置 Mock  
-5. **GameLayout**：Logo + 阶段条 + 必要 variant  
-6. App 壳：`app-index` + 空 `game` store  
-7. `npm run build`；可选 `node scripts/smoke-preview.mjs`  
-8. 人工在 Preview 验收各阶段、各视角  
+2. **`preview-perspectives.ts`**：按 product §1 各段视角填视角表与 mock userId  
+3. **`preview.ts` store**：把 `PreviewPerspective` 收敛为具体联合类型；扩展 `PreviewPerViewState`（只放「仅本人可见」的字段）  
+4. 实现共用 SFC + `data-testid`；跨阶段保留的数据一律进 store（正文会 remount，见 product §3.0.3）  
+5. **`preview-mock-controls.ts`**：按阶段矩阵配置 Mock，填充 `PreviewMockPanel.vue`  
+6. **GameLayout**：Logo + 阶段条 + 必要 variant  
+7. App 壳：`app-index` + 空 `game` store  
+8. `npm run build`；可选 `node scripts/smoke-preview.mjs`  
+9. 人工在 Preview **并排对比各视角**，逐阶段验收  
 
 ---
 
@@ -155,14 +189,24 @@ export const PREVIEW_MOCK_BY_STAGE: Partial<Record<StageId, PreviewMockControlId
 
 | 文件 | 说明 |
 |------|------|
-| `src/PreviewApp.vue` | 侧栏 + 可调尺寸手机容器 + 样式 |
-| `src/components/GameShell.vue` | 阶段 SFC 挂载占位 |
+| `src/PreviewApp.vue` | 侧栏 + 多视口横排 + 整屏样式 |
+| `src/components/PreviewPhoneViewport.vue` | 单视口：视角下拉 / 排序 / 移除 + toast 根 |
+| `src/components/PreviewViewportPanel.vue` | 侧栏「视口」区（添加视口、视口计数） |
 | `src/components/PreviewDevicePanel.vue` | 调试 → 尺寸（机型预设 + 自定义） |
 | `src/components/PreviewDevPanel.vue` | 游戏专属调试项占位 |
 | `src/components/PreviewMockPanel.vue` | Mock 开关占位（② 按游戏填充） |
-| `src/composables/useGameView.ts` | preview / app 分流 |
+| `src/components/GameShell.vue` | 阶段 SFC 挂载占位 |
+| `src/composables/useGameView.ts` | preview / app 分流 + `PREVIEW_PERSPECTIVE_KEY` |
+| `src/composables/usePreviewView.ts` | 单视口数据视图（共享局状态 + 独立视角状态） |
+| `src/composables/useScrollAreaHeight.ts` | flex 一屏布局下算滚动区 max-height |
+| `src/stores/preview.ts` | 局状态 + 视口槽位 + `perViewState` |
+| `src/lib/preview-perspectives.ts` | 视角表、mock userId、视角文案 |
 | `src/lib/preview-devices.ts` | 机型预设与 phoneStyle 工具 |
 | `src/lib/preview-mock-controls.ts` | 分阶段 Mock ID 映射 |
+| `src/lib/nickname.ts` | 昵称截断 |
+| `src/lib/ui.ts` | `TOAST_ROOT_KEY` / `useViewportToast()` |
+| `src/mock/players.ts` | Mock 玩家池（四类昵称样例） |
+| `src/styles/tokens.css` · `actions.css` | 最小设计令牌与按钮/选项基础样式 |
 
 **werewords（完整 ② 示例，含游戏独有 UI）**
 

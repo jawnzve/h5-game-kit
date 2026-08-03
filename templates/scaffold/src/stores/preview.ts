@@ -1,26 +1,54 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { PREVIEW_PERSPECTIVE_OPTIONS } from '@/lib/preview-perspectives';
+import { sliceMockPlayers, type PreviewMockPlayer } from '@/mock/players';
 import { ALL_STAGES, STAGE_LABELS, type StageId } from '@/types/game';
 
-export type PreviewPerspectiveOption = {
-  value: string;
-  label: string;
-};
+/** ② 收敛为具体联合类型，如 `'mayor' | 'player' | 'spectator'` */
+export type PreviewPerspective = string;
 
-/** Preview 专用 — mock 阶段 / 视角；② 按 product 扩展 */
+export interface PreviewViewportSlot {
+  id: string;
+  perspective: PreviewPerspective;
+}
+
+/**
+ * 每视口独立状态 —— 同一局里「只有本人看得到」的部分。
+ * ② 按 product.md 视角矩阵扩展（如本人选择、身份是否已翻开、输入框文本）。
+ */
+export interface PreviewPerViewState {
+  revealed: boolean;
+  selectedId: string | null;
+}
+
+function defaultPerViewState(): PreviewPerViewState {
+  return { revealed: false, selectedId: null };
+}
+
+let viewportSeq = 0;
+
+function createViewportSlot(perspective: PreviewPerspective): PreviewViewportSlot {
+  viewportSeq += 1;
+  return { id: `vp-${viewportSeq}`, perspective };
+}
+
+/** Preview 专用 —— 全局局状态（所有视口共享）+ 多视口槽位（各自视角） */
 export const usePreviewStore = defineStore('preview', () => {
   const currentStage = ref<StageId>('ready');
-  const mockUserId = ref('10001');
-  const perspective = ref('default');
 
-  /** 手机视口尺寸（默认 iPhone SE）；由 PreviewDevicePanel 切换预设或自定义 */
-  const previewPhoneWidth = ref(375);
-  const previewPhoneHeight = ref(667);
+  /** 默认为每个视角开一个并排视口 */
+  const viewports = ref<PreviewViewportSlot[]>(
+    PREVIEW_PERSPECTIVE_OPTIONS.map(createViewportSlot)
+  );
 
-  /** ② 按 product §1 各段视角填写；可随 currentStage 在 computed 中过滤 */
-  const perspectiveOptions = ref<PreviewPerspectiveOption[]>([
-    { value: 'default', label: '默认视角' },
-  ]);
+  const perViewState = ref<Record<string, PreviewPerViewState>>({});
+
+  const mockPlayerCount = ref(4);
+  const players = ref<PreviewMockPlayer[]>(sliceMockPlayers(mockPlayerCount.value));
+
+  /** 手机视口尺寸（默认 iPhone 12 Pro）；由 PreviewDevicePanel 切换 */
+  const previewPhoneWidth = ref(390);
+  const previewPhoneHeight = ref(844);
 
   const stageTitle = computed(
     () => STAGE_LABELS[currentStage.value] ?? currentStage.value
@@ -28,20 +56,61 @@ export const usePreviewStore = defineStore('preview', () => {
 
   const stages = ALL_STAGES;
 
-  /** 切换视角时同步 mock 用户/角色等；② 按 product 实现 */
-  function applyPerspectivePreset() {
-    /* h5-game-ui */
+  watch(mockPlayerCount, (n) => {
+    players.value = sliceMockPlayers(n);
+  });
+
+  function ensureViewState(perspective: PreviewPerspective): PreviewPerViewState {
+    if (!perViewState.value[perspective]) {
+      perViewState.value[perspective] = defaultPerViewState();
+    }
+    return perViewState.value[perspective];
+  }
+
+  function resetAllViewState() {
+    perViewState.value = {};
+  }
+
+  function addViewport(perspective: PreviewPerspective = PREVIEW_PERSPECTIVE_OPTIONS[0]) {
+    viewports.value.push(createViewportSlot(perspective));
+  }
+
+  function removeViewport(id: string) {
+    if (viewports.value.length <= 1) return;
+    viewports.value = viewports.value.filter((v) => v.id !== id);
+  }
+
+  function moveViewport(id: string, delta: -1 | 1) {
+    const list = viewports.value;
+    const i = list.findIndex((v) => v.id === id);
+    if (i < 0) return;
+    const j = i + delta;
+    if (j < 0 || j >= list.length) return;
+    const next = [...list];
+    [next[i], next[j]] = [next[j], next[i]];
+    viewports.value = next;
+  }
+
+  function setViewportPerspective(id: string, perspective: PreviewPerspective) {
+    const slot = viewports.value.find((v) => v.id === id);
+    if (slot) slot.perspective = perspective;
   }
 
   return {
     currentStage,
-    mockUserId,
-    perspective,
+    stages,
+    stageTitle,
+    viewports,
+    perViewState,
+    mockPlayerCount,
+    players,
     previewPhoneWidth,
     previewPhoneHeight,
-    perspectiveOptions,
-    stageTitle,
-    stages,
-    applyPerspectivePreset,
+    ensureViewState,
+    resetAllViewState,
+    addViewport,
+    removeViewport,
+    moveViewport,
+    setViewportPerspective,
   };
 });

@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
   新建游戏：scaffold 工程骨架 + init Loop 工具链（一条命令）。

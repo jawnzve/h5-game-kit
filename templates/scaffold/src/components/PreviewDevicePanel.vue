@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Preview 侧栏「尺寸」：机型预设与自定义宽高，作用于全部视口 */
 import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import {
@@ -11,7 +12,7 @@ import { usePreviewStore } from '@/stores/preview';
 const preview = usePreviewStore();
 const { previewPhoneWidth, previewPhoneHeight } = storeToRefs(preview);
 
-const selectedDeviceId = ref<PreviewDeviceId>('iphone-se');
+const selectedDeviceId = ref<PreviewDeviceId>('iphone-12-pro');
 
 function deviceOptionLabel(id: PreviewDeviceId): string {
   const preset = findPreviewDevice(id);
@@ -69,17 +70,17 @@ label {
   display: block;
   margin-top: 12px;
   font-size: 12px;
-  color: #a8b4ff;
+  color: var(--kit-text-secondary);
 }
 select,
 input[type='number'] {
   width: 100%;
   margin-top: 4px;
   padding: 6px;
+  border: 1px solid var(--kit-btn-border);
   border-radius: 6px;
-  border: 1px solid #333;
-  background: #0e1018;
-  color: inherit;
+  background: rgba(14, 16, 24, 1);
+  color: var(--kit-text-primary);
   box-sizing: border-box;
 }
 .custom-device label {

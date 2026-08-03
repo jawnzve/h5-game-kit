@@ -10,7 +10,7 @@
 
 ```text
 执行 h5-game-test（gameId=<gameId>）：
-1. 阅读 h5-game-loop-kit/skills/h5-game-test/SKILL.md（或项目内 .cursor/skills）
+1. 阅读 h5-game-kit/skills/h5-game-test/SKILL.md（或项目内 .cursor/skills）
 2. npm run build && 运行 scripts/run-e2e.ps1 或 npx playwright test tests/e2e/<gameId>.spec.js（APP_PATH 为 App 版 app-index，不测 Preview）
 3. 读取 tests/e2e/last-run.json
 4. 若失败：仅修改 src/ 与 tests/，按 h5-game-dev 修复；IM 以该游戏 im.md 为准

@@ -49,6 +49,6 @@ description: >-
 
 ## 参考
 
-- Rule：`rules/h5-game-loop.mdc`
+- Rule：`rules/h5-game-kit.mdc`
 - 运行时骨架：`templates/scaffold/`（`new-game.ps1` 已含）
 - 模式：`docs/WORKFLOW-MODES.md`

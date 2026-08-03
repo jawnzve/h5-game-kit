@@ -1,10 +1,32 @@
+import { inject, isRef, type InjectionKey, type Ref } from 'vue';
+
+/** Preview 多视口 / App 壳：toast 挂载到当前 [data-toast-root] */
+export const TOAST_ROOT_KEY: InjectionKey<
+  Ref<HTMLElement | null> | HTMLElement | null
+> = Symbol('toastRoot');
+
 /** Toast — 与 http-request.handleApiResponse 的 showToast 对齐 */
-export function toast(message: string, type = 'info', duration = 2000): void {
+export function toast(
+  message: string,
+  type = 'info',
+  duration = 2000,
+  mountRoot?: HTMLElement | null
+): void {
   if (typeof window.showToast === 'function') {
-    window.showToast(message, type, duration);
+    window.showToast(message, type, duration, mountRoot ?? undefined);
     return;
   }
   console.warn('[ui] showToast:', message);
+}
+
+/** 在 setup / composable 内调用，toast 显示在当前视口壳内 */
+export function useViewportToast() {
+  const root = inject(TOAST_ROOT_KEY, null);
+  return (message: string, type = 'info', duration = 2000) => {
+    const el =
+      root == null ? undefined : isRef(root) ? root.value ?? undefined : root;
+    toast(message, type, duration, el);
+  };
 }
 
 /** 模态警告框 */

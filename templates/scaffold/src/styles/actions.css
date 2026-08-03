@@ -1,0 +1,62 @@
+/**
+ * 操作区基础样式（按钮 / 选项 / 提示）。② 各游戏按 product.md 调整配色与尺寸。
+ * 兼容约定见 kit LESSONS L-2026-07-15-02：flex 子项间距用 margin，不用 gap。
+ */
+.hint,
+.notice,
+.warn {
+  color: var(--kit-accent-primary);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: var(--kit-btn-padding-y) var(--kit-btn-padding-x);
+  border-radius: var(--kit-btn-radius);
+  border: 1px solid var(--kit-btn-border);
+  background: var(--kit-bg-subtle);
+  color: var(--kit-text-primary);
+  font-size: var(--kit-btn-font-size);
+  font-weight: bold;
+  line-height: 1.2;
+  min-height: var(--kit-btn-min-height);
+  cursor: pointer;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn.primary {
+  background: var(--kit-btn-primary-bg);
+  color: var(--kit-btn-primary-text);
+  border-color: transparent;
+}
+
+.btn:disabled,
+.btn.primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.option {
+  box-sizing: border-box;
+  padding: 12px 8px;
+  border: none;
+  border-radius: var(--kit-btn-radius);
+  background: var(--kit-bg-panel);
+  color: var(--kit-text-primary);
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.2;
+  min-height: var(--kit-btn-min-height);
+  text-align: center;
+  cursor: pointer;
+}
+
+.option.active {
+  background: rgba(255, 193, 7, 0.2);
+  color: var(--kit-accent-primary);
+}

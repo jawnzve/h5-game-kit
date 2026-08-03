@@ -2,7 +2,7 @@
 
 > **版本**：v1.0  
 > **适用范围**：本 kit 脚手架、Skill、Rule 及由此 init 的新游戏仓库  
-> **变更**：修改本文需同步 `rules/h5-game-loop.mdc` 与相关 Skill
+> **变更**：修改本文需同步 `rules/h5-game-kit.mdc` 与相关 Skill
 
 ---
 
@@ -25,7 +25,7 @@
 
 ## 2. 目录结构（新游戏 scaffold 目标）
 
-**一游戏一仓库**：每个 Git 仓只含一个 `gameId`；`public/core/` 随 scaffold 落在该仓内。**不建** `h5-game-common` 独立包。kit（`h5-game-loop-kit`）全局一份，经 `new-game.ps1` / `sync-kit.ps1` 接入。
+**一游戏一仓库**：每个 Git 仓只含一个 `gameId`；`public/core/` 随 scaffold 落在该仓内。**不建** `h5-game-common` 独立包。kit（`h5-game-kit`）全局一份，经 `new-game.ps1` / `sync-kit.ps1` 接入。
 
 ```
 <game-repo>/
@@ -47,16 +47,19 @@
 │   │   └── preview-main.ts         # → preview 页
 │   ├── bridge/                     # App 桥接类型声明 + 薄封装（不替代 hybirdapp 协议）
 │   ├── types/                      # im、阶段、玩家等（对齐 im.md）
-│   ├── stores/                     # Pinia（game.ts 等）
+│   ├── stores/                     # Pinia（game.ts / preview.ts）
 │   ├── services/                   # IM 解析、REST、sync
 │   ├── composables/
-│   ├── components/                 # 通用 UI 块
-│   ├── App.vue
+│   ├── components/                 # 通用 UI 块 + Preview 视口/面板
+│   ├── mock/                       # Preview mock 数据（仅 ② 用）
+│   ├── styles/                     # tokens.css（--kit-*）+ actions.css
+│   ├── App.vue                     # App 壳
+│   └── PreviewApp.vue              # Preview 多视口工作台
 ├── preview/                        # Preview 入口 HTML（② 确认 UI）
 │   └── preview-index.html
 ├── docs/games/<gameId>/
 ├── tests/e2e/                      # Playwright
-└── .cursor/rules/                  # h5-game-loop.mdc
+└── .cursor/rules/                  # h5-game-kit.mdc
 ```
 
 **产物部署：** `npm run build` → `dist/`；`npm start`（Express）托管 **`dist/`**。

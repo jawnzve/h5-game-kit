@@ -1,25 +1,27 @@
 <script setup lang="ts">
+import { provide, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useGameStore } from '@/stores/game';
+import GameShell from '@/components/GameShell.vue';
 import LottieCanvas from '@/components/LottieCanvas.vue';
+import { GAME_VIEW_MODE_KEY } from '@/composables/useGameView';
+import { TOAST_ROOT_KEY } from '@/lib/ui';
+import { useGameStore } from '@/stores/game';
+
+provide(GAME_VIEW_MODE_KEY, 'app');
+
+const appShellRef = ref<HTMLElement | null>(null);
+provide(TOAST_ROOT_KEY, appShellRef);
 
 const game = useGameStore();
-const { currentStage, loading, error } = storeToRefs(game);
-const gameName = '{{gameName}}';
+const { loading, error } = storeToRefs(game);
 </script>
 
 <template>
-  <div class="app-shell" data-testid="app-shell">
-    <header class="app-header">
-      <h1>{{ gameName }} — App</h1>
-      <p class="hint">④ 在此接 IM/REST；E2E 只测本页</p>
-    </header>
-    <main data-testid="stage-root">
-      <p v-if="loading">加载中…</p>
-      <p v-if="error" data-testid="el-toast-error">{{ error }}</p>
-      <section v-else :data-testid="`stage-${currentStage}`">
-        当前阶段：<code>{{ currentStage }}</code>
-      </section>
+  <div ref="appShellRef" class="app-shell" data-testid="app-shell" data-toast-root>
+    <main class="stage-root" data-testid="stage-root">
+      <p v-if="loading" class="loading">加载中…</p>
+      <p v-if="error" class="error" data-testid="el-toast-error">{{ error }}</p>
+      <GameShell />
     </main>
     <LottieCanvas />
   </div>
@@ -27,13 +29,31 @@ const gameName = '{{gameName}}';
 
 <style scoped>
 .app-shell {
-  font-family: system-ui, sans-serif;
-  padding: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 100vh;
   max-width: 480px;
   margin: 0 auto;
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+  background: var(--kit-bg-app);
+  color: var(--kit-text-primary);
 }
-.app-header .hint {
-  color: #666;
-  font-size: 13px;
+.stage-root {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.loading {
+  text-align: center;
+  color: var(--kit-text-muted);
+}
+.error {
+  margin-bottom: 12px;
+  text-align: center;
+  color: var(--kit-accent-danger);
 }
 </style>

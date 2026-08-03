@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
   从 kit templates/scaffold 生成游戏 Vite 工程骨架。

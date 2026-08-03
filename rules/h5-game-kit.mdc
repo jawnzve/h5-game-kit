@@ -4,7 +4,7 @@ description: >-
 alwaysApply: true
 ---
 
-# H5 Game Loop Rule
+# H5 Game Kit Rule
 
 ## 范围
 
@@ -69,7 +69,7 @@ alwaysApply: true
 
 ## 通用踩坑（kit LESSONS）
 
-- **仅 kit 通用层**：`h5-game-loop-kit/docs/LESSONS.md` — 跨游戏 H5/Loop/测试陷阱（兼容、Vite、Playwright、Pinia 等）
+- **仅 kit 通用层**：`h5-game-kit/docs/LESSONS.md` — 跨游戏 H5/Loop/测试陷阱（兼容、Vite、Playwright、Pinia 等）
 - **游戏专有**不写 LESSONS：IM 字段、玩法、userId 映射 → `spec.md` / `im.md`；产品未定 → `product.md` §16；可选游戏 `AGENT.md`
 - 进入 ④⑤ 前读 kit LESSONS；通用疑难解决后用 `h5-game-lessons` 按 rubric 判断是否追加（跨游戏才记；人工纠正工程类 → 必提议）
 
@@ -81,6 +81,6 @@ alwaysApply: true
 
 ## 参考
 
-- 技术栈：`h5-game-loop-kit/docs/TECH-STACK.md`
-- 工具链：`h5-game-loop-kit`
-- 设计：`h5-game-loop-kit/docs/H5-AI-Loop设计方案.md`
+- 技术栈：`h5-game-kit/docs/TECH-STACK.md`
+- 工具链：`h5-game-kit`
+- 设计：`h5-game-kit/docs/H5-AI-Loop设计方案.md`

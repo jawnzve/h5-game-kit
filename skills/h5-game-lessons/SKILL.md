@@ -69,7 +69,7 @@ description: >-
 
 ## 从游戏仓贡献（跨游戏坑 → 全员共享）
 
-**唯一真源**：`h5-game-loop-kit/docs/LESSONS.md`（所有 gameId 共用这一份）。
+**唯一真源**：`h5-game-kit/docs/LESSONS.md`（所有 gameId 共用这一份）。
 
 在游戏仓（如 werewords）开发时：
 
@@ -89,5 +89,5 @@ description: >-
 
 ## 参考
 
-- `h5-game-loop-kit/docs/LESSONS.md`
-- `h5-game-loop-kit/docs/TECH-STACK.md`
+- `h5-game-kit/docs/LESSONS.md`
+- `h5-game-kit/docs/TECH-STACK.md`

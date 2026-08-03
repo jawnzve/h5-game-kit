@@ -8,7 +8,9 @@
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "start": "node app.js",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "docs:anchors": "node scripts/fix-product-md-anchors.mjs",
+    "docs:anchors:check": "node scripts/fix-product-md-anchors.mjs --check"
   },
   "dependencies": {
     "express": "^4.18.2",

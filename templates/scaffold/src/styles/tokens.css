@@ -1,0 +1,36 @@
+/**
+ * kit 最小设计令牌。② 各游戏可在此新增 --<game>-* 变量或整体替换配色。
+ * 全部使用 rgba，避免旧 WebView 对 color-mix / oklch 支持不齐。
+ */
+:root {
+  /* 背景 */
+  --kit-bg-app: rgba(26, 29, 46, 1);
+  --kit-bg-panel: rgba(255, 255, 255, 0.05);
+  --kit-bg-subtle: rgba(255, 255, 255, 0.08);
+  --kit-bg-overlay: rgba(0, 0, 0, 0.35);
+
+  /* 文字 */
+  --kit-text-primary: rgba(232, 232, 240, 1);
+  --kit-text-secondary: rgba(200, 208, 232, 1);
+  --kit-text-muted: rgba(136, 146, 176, 1);
+  --kit-text-dim: rgba(102, 102, 102, 1);
+
+  /* 强调色 */
+  --kit-accent-primary: rgba(255, 193, 7, 1);
+  --kit-accent-danger: rgba(255, 59, 48, 1);
+
+  /* 按钮 */
+  --kit-btn-radius: 10px;
+  --kit-btn-padding-y: 14px;
+  --kit-btn-padding-x: 12px;
+  --kit-btn-min-height: 48px;
+  --kit-btn-font-size: 15px;
+  --kit-btn-primary-bg: var(--kit-accent-primary);
+  --kit-btn-primary-text: rgba(0, 0, 0, 1);
+  --kit-btn-border: rgba(255, 255, 255, 0.15);
+
+  /* 间距 / 动效 */
+  --kit-shell-padding: 16px;
+  --kit-transition-fast: 0.15s ease;
+  --kit-transition-card: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}

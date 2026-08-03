@@ -588,7 +588,7 @@ App 测试包 iOS/Android 真机联调 **不在本工具链终点范围内**。�
 ### 14.1 目标目录（kit 内）
 
 ```
-h5-game-loop-kit/
+h5-game-kit/
 ├── templates/scaffold/   # app.js、http-config、package 等（提取后）
 ├── skills/
 ├── rules/
@@ -599,7 +599,7 @@ h5-game-loop-kit/
 
 > 后端服务由同事独立维护；AI 工作区 **不包含** 后端代码仓库，仅使用后端提供的 `im.md` / `rest.md` / fixtures。
 
-### 14.2 P0 — `h5-game-loop-kit`（Loop / 契约 / 测试）
+### 14.2 P0 — `h5-game-kit`（Loop / 契约 / 测试）
 
 | 资源 | 提取后路径 | 状态 |
 |------|------------|------|
@@ -613,7 +613,7 @@ h5-game-loop-kit/
 | Skill：`h5-game-dev` | `skills/h5-game-dev/SKILL.md` | **已提取** |
 | Skill：`h5-game-test` | `skills/h5-game-test/SKILL.md` | **已提取** |
 | Skill：`h5-game-orchestrator` | `skills/h5-game-orchestrator/SKILL.md` | **已提取** |
-| Cursor Rule | `rules/h5-game-loop.mdc` | **已提取** |
+| Cursor Rule | `rules/h5-game-kit.mdc` | **已提取** |
 | Playwright helpers | `tests/e2e/helpers/*.js` | **已提取** |
 | E2E 用例骨架 | `tests/e2e/game.spec.template.js` | **已提取** |
 | 跑测脚本 | `scripts/run-e2e.ps1` | **已提取** |
@@ -655,7 +655,7 @@ h5-game-loop-kit/
 
 | 阶段 | 状态 | 说明 |
 |------|------|------|
-| **P0** | ✅ 完成 | `h5-game-loop-kit` + `templates/scaffold/`（含 `public/core`） |
+| **P0** | ✅ 完成 | `h5-game-kit` + `templates/scaffold/`（含 `public/core`） |
 | **h5-game-common** | ❌ 不做 | 一仓一游戏，无跨游戏 sync 需求 |
 | **ManagerBase 薄封装** | ❌ 不做 | 新栈 Pinia + services |
 
@@ -669,7 +669,7 @@ h5-game-loop-kit/
 
 ### 14.7 提取完成检查项
 
-- [x] `h5-game-loop-kit` 含 §14.2 全部 P0 资源
+- [x] `h5-game-kit` 含 §14.2 全部 P0 资源
 - [x] `new-game.ps1` 可初始化 scaffold + Loop 工具链
 - [x] `templates/scaffold/public/core/` 含 bridge / utils / components / vendor
 - [x] 本文档 §14.2 / §14.3 已更新为实际路径（**无 h5-game-common**）
@@ -701,8 +701,8 @@ npx playwright test tests/e2e/<gameId>.spec.js
 | 飞行棋 H5 参考 | `aeroplane-chess`（ludo、`baseInfo` 解析、http-config） |
 | 周年庆活动 | `event-anniversary`（静态活动栈，**非**语音房游戏流程） |
 | H5 API 配置 | Vite `.env.*` 或 `src/config/env.ts` → apiBase |
-| 技术栈约定 | `h5-game-loop-kit/docs/TECH-STACK.md` |
-| Loop 工具链 | `h5-game-loop-kit/` — 见 **§14.2** |
+| 技术栈约定 | `h5-game-kit/docs/TECH-STACK.md` |
+| Loop 工具链 | `h5-game-kit/` — 见 **§14.2** |
 | runtime core | 各游戏仓 `public/core/`（自 scaffold 拷贝，见 **§14.3**） |
 
 ---

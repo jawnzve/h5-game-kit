@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
   运行 Playwright E2E 并生成 last-run.json（在游戏仓库根目录执行）。

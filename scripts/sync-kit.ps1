@@ -1,7 +1,7 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
-  将 h5-game-loop-kit 的工具链更新同步到已初始化的游戏仓库（不覆盖游戏业务文件）。
+  将 h5-game-kit 的工具链更新同步到已初始化的游戏仓库（不覆盖游戏业务文件）。
 
 .DESCRIPTION
   覆盖：Rule、（可选）Skills、e2e helpers、run-e2e.ps1、KIT_VERSION、LOOP_README
@@ -46,8 +46,15 @@ function Copy-Tree($From, $To) {
 # Rule
 $rulesDst = Join-Path $Target '.cursor\rules'
 New-Item -ItemType Directory -Path $rulesDst -Force | Out-Null
-Copy-Item (Join-Path $KitRoot 'rules\h5-game-loop.mdc') (Join-Path $rulesDst 'h5-game-loop.mdc') -Force
-Write-Host "[sync] .cursor/rules/h5-game-loop.mdc"
+Copy-Item (Join-Path $KitRoot 'rules\h5-game-kit.mdc') (Join-Path $rulesDst 'h5-game-kit.mdc') -Force
+Write-Host "[sync] .cursor/rules/h5-game-kit.mdc"
+
+# 清理改名前的旧 Rule，避免两份规则同时生效
+$legacyRule = Join-Path $rulesDst 'h5-game-loop.mdc'
+if (Test-Path $legacyRule) {
+    Remove-Item $legacyRule -Force
+    Write-Host "[sync] removed legacy .cursor/rules/h5-game-loop.mdc"
+}
 
 # Skills
 if ($InstallSkills) {
@@ -69,7 +76,8 @@ Write-Host "[sync] tests/e2e/helpers/*, last-run.json.example"
 $scriptsDst = Join-Path $Target 'scripts'
 New-Item -ItemType Directory -Path $scriptsDst -Force | Out-Null
 Copy-Item (Join-Path $KitRoot 'scripts\run-e2e.ps1') (Join-Path $scriptsDst 'run-e2e.ps1') -Force
-Write-Host "[sync] scripts/run-e2e.ps1"
+Copy-Item (Join-Path $KitRoot 'scripts\fix-product-md-anchors.mjs') (Join-Path $scriptsDst 'fix-product-md-anchors.mjs') -Force
+Write-Host "[sync] scripts/run-e2e.ps1, fix-product-md-anchors.mjs"
 
 # 通用 CSS（kit-scrollbar 等，不覆盖游戏自有 public/css）
 $cssSrc = Join-Path $KitRoot 'templates\scaffold\public\css'

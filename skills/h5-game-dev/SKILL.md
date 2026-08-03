@@ -7,7 +7,7 @@ description: >-
 
 ## 技术栈（必须）
 
-见 `h5-game-loop-kit/docs/TECH-STACK.md`：
+见 `h5-game-kit/docs/TECH-STACK.md`：
 
 - IM/REST/sync → **`src/services/`** + **`src/stores/`（Pinia）**
 - 类型 → **`src/types/`**（对齐 `im.md`）
@@ -155,5 +155,5 @@ startDelayedSyncDetection(2000);
 
 ## 参考
 
-- 技术栈：`h5-game-loop-kit/docs/TECH-STACK.md`
+- 技术栈：`h5-game-kit/docs/TECH-STACK.md`
 - 设计方案 §5、§8.3

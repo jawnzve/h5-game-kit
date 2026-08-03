@@ -16,17 +16,17 @@
 
 ### 1. 安装技能
 
-本 Skill 已随 **`h5-game-loop-kit`** 分发：
+本 Skill 已随 **`h5-game-kit`** 分发：
 
 ```
-h5-game-loop-kit/skills/agentmd-creator/
+h5-game-kit/skills/agentmd-creator/
 ```
 
 安装方式（与 kit 内其他 Skill 相同）：
 
 | 方式 | 做法 |
 |------|------|
-| **@ 引用** | `@h5-game-loop-kit/skills/agentmd-creator/SKILL.md` |
+| **@ 引用** | `@h5-game-kit/skills/agentmd-creator/SKILL.md` |
 | **复制到个人** | 复制到 `%USERPROFILE%\.cursor\skills\` 或 `~/.cursor/skills/` |
 | **复制到项目** | 复制到 `<repo>/.cursor/skills/` |
 

@@ -1,11 +1,14 @@
-# h5-game-loop-kit
+# h5-game-kit
 
 语音房 H5 游戏的 **AI Loop 工具链起点包**：Skill、Rule、测试脚手架、文档模板。
 
-**Git 仓库**：https://gitlab.haochang.tv/chanpin_yongyan/h5-game-loop-kit.git
+**Git 仓库**（两处同源，`origin` 为 GitHub）：
+
+- GitHub：https://github.com/jawnzve/h5-game-kit.git
+- GitLab：https://gitlab.haochang.tv/chanpin_yongyan/h5-game-kit.git
 
 ```powershell
-git clone https://gitlab.haochang.tv/chanpin_yongyan/h5-game-loop-kit.git
+git clone https://github.com/jawnzve/h5-game-kit.git
 ```
 
 **技术栈约定**：Vue 3 + Vite + TypeScript + Pinia — 见 [`docs/TECH-STACK.md`](docs/TECH-STACK.md)。
@@ -15,7 +18,7 @@ git clone https://gitlab.haochang.tv/chanpin_yongyan/h5-game-loop-kit.git
 ## 目录结构
 
 ```
-h5-game-loop-kit/
+h5-game-kit/
 ├── docs/
 │   ├── TECH-STACK.md
 │   ├── LESSONS.md
@@ -33,7 +36,7 @@ h5-game-loop-kit/
 ├── rules/                   # 复制到游戏仓 .cursor/rules/
 ├── loop/                    # /loop dynamic 用的 prompt 模板
 ├── tests/e2e/               # Playwright helpers + 用例模板
-├── scripts/                 # init-game.ps1、scaffold-game.ps1、new-game.ps1、sync-kit.ps1、run-e2e.ps1
+├── scripts/                 # init-game.ps1、scaffold-game.ps1、new-game.ps1、sync-kit.ps1、run-e2e.ps1、fix-product-md-anchors.mjs
 ├── templates/scaffold/      # Vite 工程骨架（scaffold-game.ps1 拷贝）
 ├── playwright.config.template.js
 └── package.template.json
@@ -78,7 +81,7 @@ h5-game-loop-kit/
 
 | 方式 | 做法 |
 |------|------|
-| **对话 @ 引用** | `@h5-game-loop-kit/skills/h5-game-spec/SKILL.md`（其他 Skill 同理） |
+| **对话 @ 引用** | `@h5-game-kit/skills/h5-game-spec/SKILL.md`（其他 Skill 同理） |
 | **复制到个人** | 复制 `skills/*` → `%USERPROFILE%\.cursor\skills\` |
 | **复制到项目** | 复制 `skills/*` → `<game-repo>/.cursor/skills/` |
 

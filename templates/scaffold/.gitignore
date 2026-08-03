@@ -1,5 +1,9 @@
 node_modules/
 dist/
+*.tsbuildinfo
+# tsc 误配时 vite.config.ts 会被编译到根目录，且 Vite 会优先加载 .js
+vite.config.js
+vite.config.d.ts
 .playwright/
 test-results/
 playwright-report/
