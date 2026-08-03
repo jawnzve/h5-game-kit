@@ -18,7 +18,7 @@ const hasAnyControl = computed(
 
 <template>
   <p v-if="hasAnyControl" class="mock-hint">
-    h5-game-ui：在此添加 Mock checkbox / select
+    h5-game-preview：在此添加 Mock checkbox / select
   </p>
 </template>
 

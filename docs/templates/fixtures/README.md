@@ -1,6 +1,7 @@
 # IM Fixtures
 
-> **由后端同事提供**真实消息 JSON，AI 不得编造业务字段。
+> 真源在自研后端仓 `h5-game-server/docs/games/<gameId>/fixtures/`。  
+> 与引擎实现一并维护；**禁止**在无依据时编造业务字段。
 
 ## 命名
 
@@ -8,7 +9,7 @@
 
 ## 格式
 
-**与该项目 `im.md` 描述的消息体一致**（Centrifugo publication、App 透传包等均可，不强制 QNI/`action` 外层）。
+与该游戏 `im.md` 描述的消息体一致。
 
 ## 最少集
 
@@ -18,4 +19,4 @@
 
 ## 校验
 
-init 后可用 Playwright L2 或手动 `JSON.parse`；AI 审查 fixture 与 `im.md` 是否一致。
+fixture 与 `im.md` / 引擎行为一致；前端 ④ 只读审查。

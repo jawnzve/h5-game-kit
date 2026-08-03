@@ -1,7 +1,7 @@
 ﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
-  新建游戏：scaffold 工程骨架 + init Loop 工具链（一条命令）。
+  新建游戏：scaffold 工程骨架 + init Kit 工具链（一条命令）。
 
 .EXAMPLE
   & "<kit-root>\scripts\new-game.ps1" `
@@ -36,4 +36,4 @@ $initScript = Join-Path $PSScriptRoot 'init-game.ps1'
 & $initScript -GameId $GameId -Target $Target -KitRoot $KitRoot -InstallSkills:$InstallSkills
 
 Write-Host ""
-Write-Host "new-game complete: scaffold + Loop toolchain for '$GameId'" -ForegroundColor Green
+Write-Host "new-game complete: scaffold + Kit toolchain for '$GameId'" -ForegroundColor Green

@@ -1,15 +1,15 @@
 ---
-name: h5-game-ui
+name: h5-game-preview
 description: >-
   语音房 H5 游戏流程②：按 product.md 生成共用 Vue SFC + Preview（阶段/状态/视角 mock 验收）
   + App 壳（app-index.html）。Preview 不接真接口；App 壳留 ④ 钩子。触发：product 确认后。
 ---
-# h5-game-ui
+# h5-game-preview
 
 ## 流程位置
 
-**② H5 UI** — `product.md` 确认后；产出 **Preview + App 壳**。  
-（Loop 主流程：① product → **② UI** → ③ 等后端 → ④ 功能 → ⑤ L2；**不是**第 ③ 步。）
+**② Preview** — `product.md` **已人工确认**后；产出 **Preview + App 壳**。  
+（流程：① product 确认 → **② Preview 确认** → ③ 自研后端 → ④ 功能 → ⑤ L2 → ⑥ sim 验收。）
 
 ## 技术栈（必须）
 
@@ -32,24 +32,23 @@ description: >-
 - `src/stages/*.vue`、`src/components/` — App 与 Preview **复用**
 - `data-testid` = product **§3 组件** 与 **§4+ 阶段矩阵** 中的元素 ID
 
-### Preview 版（人工验收 UI）
+### Preview 版（人工验收原型）
 
 - 入口：`preview/preview-index.html` → `src/entries/preview-main.ts`
 - **外壳规范**：必读 **`docs/PREVIEW-UI-SPEC.md`**
-  - 左侧 `preview-panel`：阶段（`stageId（中文名）`）/ **视口** / **调试（人数、尺寸）** / **分阶段 Mock**（无 Mock 不显示）
-  - 右侧 **多视口横排**：`PreviewPhoneViewport` ×N，每个视口一个视角、可增删排序；默认 iPhone 12 Pro 390×844
+  - 左侧 `preview-panel`：阶段（`stageId（中文名）`）/ **视口** / **调试** / **分阶段 Mock**
+  - 右侧 **多视口横排**：`PreviewPhoneViewport` ×N
   - 内嵌 `GameShell`，与 App **共用**阶段 SFC
-- Pinia **`preview` store**：局状态（全视口共享）+ `viewports` 槽位 + `perViewState`（仅本人可见的部分）
-- **`src/lib/preview-perspectives.ts`**：视角表、mock userId、视角文案 —— 按 product §1 各段视角填写
-- **`src/lib/preview-mock-controls.ts`**：各阶段可见 Mock 项映射
-- **`useGameView()`**：Preview / App 分流（`GAME_VIEW_MODE_KEY` + `PREVIEW_PERSPECTIVE_KEY`）
-- toast 用 **`useViewportToast()`**，落在本视口内（视口根节点已标 `data-toast-root`）
+- Pinia **`preview` store**：**须有**局状态（可切换阶段、人数等）+ 视口槽位 + `perViewState` —— **不是纯静态展示**；简单跳转与状态存储参照 **werewords Preview**
+- 改 Preview 行为/文案/阶段时，**同步修订 `product.md`**（反之亦然）；完成后 **请用户确认原型**，确认前 orchestrator **不进 ③**
+- **`src/lib/preview-perspectives.ts`**、**`preview-mock-controls.ts`** 等按 product 填写
+- toast 用视口级挂载（`data-toast-root`）
 - **不**调用 REST/IM；**不**依赖 `im.md` 业务字段
 
 ### App 版（正式壳）
 
 - 入口：`games/<gameId>/app-index.html` → `src/entries/app-main.ts`
-- ② 仅 UI + `game` store 空壳；预留 `src/services/` 钩子
+- ② 仅共用 UI + `game` store 空壳；预留 `src/services/` 钩子
 - **不含** Preview 侧栏与桌面底色
 - ④ 接远端 IM/REST
 
@@ -71,7 +70,7 @@ description: >-
 7. 编写 **`preview-mock-controls.ts`** + `PreviewMockPanel.vue`（Mock 项与阶段矩阵对齐）
 8. 实现 **App 壳** + 空 `game` store
 9. `npm run build`；可选 `scripts/smoke-preview.mjs` 冒烟
-10. 请用户在 **Preview** 并排对比各视角验收；通过后并行 ③ 等契约
+10. 请用户在 **Preview** 并排对比各视角验收；**用户明确确认原型后**再进入 ③（自研后端）
 
 ## 通用 UI（scaffold 已含）
 

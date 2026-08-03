@@ -12,7 +12,8 @@
 | 启动 | 游戏仓 `npm start` → `node app.js` |
 | 职责 | **仅托管静态资源**（见 §3 静态目录）；**不提供**游戏 REST/IM 业务 API |
 | 环境 | `apiBase` 由 `http-config.js` 按 **访问域名** 选择 |
-| App 联调 | **App 版** IM/REST 连 **远端真实后端**（按 `im.md` / `rest.md` + http-config），**不连本机 API** |
+| App 联调 | App 版可连 **自研本地后端**（`local` → `http://<hostname>:4000`）或远端预设；见 §4 |
+| ⑥ 人工验收 | `public/sim-lobby.html`：多窗 sim；须在 **⑤ L2 全绿之后**（见 WORKFLOW-MODES） |
 
 ---
 
@@ -36,7 +37,8 @@
 |----|------|
 | **静态根** | `npm run build` 产出 **`dist/`**；`app.js` 托管 `dist/` |
 | **App 入口** | **`/games/<gameId>/app-index.html`** — WebView / E2E / 正式联调 |
-| **Preview 入口** | **`/preview/preview-index.html`** — 仅 ② 确认 UI |
+| **Preview 入口** | **`/preview/preview-index.html`** — ② 可交互原型（阶段跳转+mock 状态），人工确认 |
+| **Sim Lobby** | **`/sim-lobby.html`**（或 `public/sim-lobby.html` 构建产物）— **⑥** 多窗人工验收 |
 | 资源 | 图片等放 `public/games/<gameId>/assets/`（构建时拷贝进 `dist/`） |
 
 `app.js` 可做 `/` → 默认游戏 `app-index` 等 redirect；**不注入** API 环境。
@@ -49,10 +51,10 @@
 
 | 项 | 约定 |
 |----|------|
-| 规则引擎 | 按 hostname：`.small-test` → … → `.dev` → qniqni 正式 → 回退 **远端 DEV** |
-| 强制 | `?http_env=prod\|test\|dev\|…` |
-| **apiBase 预设** | 默认以 **witchs-poison** 的 `loong-h5-game-server.*` 为模板；**新建游戏时 AI 须询问**是否沿用或替换 |
-| **本地静态服** | 浏览器打开 `localhost:3100` 时，`apiBase` 仍指向 **远端 dev/test API**，**不**拼 `localhost:4000` |
+| 规则引擎 | 按 hostname：私网/`localhost` → **`local`**（apiBase `http://<hostname>:4000`）；`.small-test` / `.audit` / 正式域 → 对应远端 |
+| 强制 | `?http_env=local\|small-test\|audit\|prod` |
+| **apiBase 预设** | `local` 指向本机/局域网自研后端 `:4000`；远端默认模板新建时 **须询问**是否沿用 |
+| **本地联调** | 浏览器打开 `localhost` 或私网 IP 时走 `local`，连同机 Docker 后端；`PUBLIC_WS_URL=auto` 由后端按 Host 推导 WS |
 | 导出 | `window.httpConfig.currentEnv` |
 
 ---
@@ -61,8 +63,9 @@
 
 | 版本 | 入口 | ② | ④ |
 |------|------|---|---|
-| **Preview** | preview 页 | 可切换 **阶段 / 状态 / 身份视角**；Pinia **mock**；给你确认 UI | 不接真实 IM/REST |
-| **App** | `app-index.html` | 共用 SFC + `data-testid`；可空壳/mock | 按文档接 **真实** IM/REST/sync（远端） |
+| **Preview** | preview 页 | 可切换阶段/视角；**须** mock 状态与简单跳转；人工确认原型 | 不接真实 IM/REST |
+| **App** | `app-index.html` | 共用 SFC | ④ 接 IM/REST/sync（local 或远端） |
+| **Sim Lobby** | `sim-lobby.html` | - | ⑥ 全绿后多窗人工验收 |
 
 详见 `TECH-STACK.md` §9。
 

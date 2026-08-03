@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * 游戏阶段 SFC 挂载点 — App 与 Preview 共用。
- * h5-game-ui：按 product.md 实现各 stage 组件并在此 switch / 路由。
+ * h5-game-preview：按 product.md 实现各 stage 组件并在此 switch / 路由。
  */
 import { useGameView } from '@/composables/useGameView';
 

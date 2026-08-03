@@ -329,5 +329,5 @@ product.md  ← ① 产品确认
     ↓
 spec.md     ← ④ 前 L2 用例
     ↓
-② UI → ③ 契约 → ④ 接入 → ⑤ E2E 全绿
+② Preview → ③ 契约 → ④ 接入 → ⑤ E2E 全绿
 ```

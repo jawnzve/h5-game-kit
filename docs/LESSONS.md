@@ -1,4 +1,4 @@
-# LESSONS — H5 Game Loop 通用踩坑
+# LESSONS — H5 Game Kit 通用踩坑
 
 > **唯一真源（全员共享）**：本文件在 **kit 仓库** `h5-game-kit/docs/LESSONS.md`。  
 > 任意游戏踩到**跨游戏**工程坑 → 对 AI 说「**记进工具包 LESSONS**」→ 写入**本文件**（不是游戏仓 `spec.md`）。  
@@ -49,7 +49,7 @@
   - **锚点别靠手写**：改完 `product.md` 一律跑 `npm run docs:anchors`（kit `scripts/fix-product-md-anchors.mjs`，随 `init-game` / `sync-kit` 落地）。它按 Comrak 算法重写全部 `](#…)` 并在存在悬空锚点时退出码 1；提交前可用 `npm run docs:anchors:check` 只校验不改文件
 - **状态**：active
 
-### L-2026-07-15-02 | ② ui | #css #webview #compat
+### L-2026-07-15-02 | ② preview | #css #webview #compat
 
 - **现象**：App 旧 WebView（尤指 iOS 14.4 及以下 / 旧 Android）上间距消失、毛玻璃无效、卡片比例变形、昵称不省略、描边异常等
 - **根因**：目标环境低于现代 CSS 能力；Flexbox `gap` 需 iOS 14.5+；`aspect-ratio` / `backdrop-filter` / `-webkit-text-stroke` 等支持不齐；flex 子项默认 `min-width:auto` 撑破省略
@@ -64,7 +64,7 @@
 - **参考**：ito `compatibility-notes.md`；witchs-poison / aeroplane-chess / event-anniversary 的 `shared-styles` 注释
 - **状态**：active
 
-### L-2026-08-03-01 | ② ui | #preview #toast #multi-viewport
+### L-2026-08-03-01 | ② preview | #preview #toast #multi-viewport
 
 - **现象**：Preview 并排多个手机视口时，`showToast` 弹在整个浏览器窗口中央，看不出是哪个视角触发的
 - **根因**：`web-toast.js` 原实现固定 `position: fixed` 挂 `document.body`，全局单例容器

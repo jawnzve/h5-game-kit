@@ -17,9 +17,9 @@
 | 状态 | **Pinia** | 游戏阶段、玩家、视角等 |
 | 样式 | **CSS**（可选 CSS 变量） | 不用 Tailwind / CSS-in-JS |
 | E2E | **Playwright** | L2，Mock IM |
-| 后端契约 | **`im.md` / `rest.md` / fixtures** | AI 只读，不访问后端代码 |
+| 后端契约 | **`im.md` / `rest.md` / fixtures** | 真源在自研后端仓 `h5-game-server/docs/games/<gameId>/`；前端只读；见 `BACKEND-SPEC.md` |
 
-**禁止（新游戏）：** React / Svelte、无 TypeScript 的新业务代码、重写 App bridge 层、在代码中硬编码 IM/REST 字段（以契约为准）。
+**禁止（新游戏 / 开发全程）：** React / Svelte、无 TypeScript 的新业务代码、**修改 `public/core/bridge/hybirdapp-plugin.js`**（功能/修 bug 也不行；封装只走 `src/bridge/`）、在代码中硬编码 IM/REST 字段（以契约为准）。
 
 ---
 
@@ -204,7 +204,7 @@ Playwright `baseURL` 指向 `npm start` 的静态服（默认端口 3100，见 `
 | 步骤 | 技术栈相关产出 |
 |------|----------------|
 | ① product.md | 阶段 ID、元素 ID（无 IM 类型） |
-| ② h5-game-ui | 共用 SFC + **Preview**（阶段/状态/视角 mock）+ **App 壳**（`app-index`） |
+| ② h5-game-preview | 共用 SFC + **Preview**（阶段/状态/视角 mock）+ **App 壳**（`app-index`） |
 | ③ 契约 | 后端 im/rest/fixtures |
 | ④ h5-game-dev | App 版接 **远端** IM/REST/sync（按文档，不连本机 API） |
 | ⑤ h5-game-test | Playwright + `last-run.json` |
@@ -227,7 +227,7 @@ Playwright `baseURL` 指向 `npm start` 的静态服（默认端口 3100，见 `
 | **App** | `games/<gameId>/app-index.html` | WebView；**E2E / Loop 只测此入口**；④ 远端 IM/REST | ④ 起真实逻辑 |
 | **Preview** | `preview/preview-index.html` | **仅你人工**确认阶段/状态/视角 UI | mock，**不参与 Playwright** |
 
-② `h5-game-ui`：**先实现共用组件**，再交付 Preview（完整 mock 矩阵）+ App 入口（壳，预留 services 钩子）。  
+② `h5-game-preview`：**先实现共用组件**，再交付 Preview（完整 mock 矩阵）+ App 入口（壳，预留 services 钩子）。  
 ④ `h5-game-dev`：只改 **App 版**数据流；Preview 保持 mock 供回归 UI。
 
 **http-config**：新建游戏时默认 **witchs-poison** 的 apiBase 预设；AI **须询问**是否沿用。本机 `npm start` 打开页面时，apiBase 仍走 **远端 dev/test**，不指向 `localhost:4000`。

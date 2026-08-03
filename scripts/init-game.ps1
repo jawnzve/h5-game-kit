@@ -1,7 +1,7 @@
 ﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
-  从 h5-game-kit 初始化语音房 H5 游戏仓库的 Loop 工具链。
+  从 h5-game-kit 初始化语音房 H5 游戏仓库的 Kit 工具链。
 
 .EXAMPLE
   & "<kit-root>\scripts\init-game.ps1" `
@@ -48,6 +48,12 @@ if ($InstallSkills) {
     New-Item -ItemType Directory -Path $skillsDst -Force | Out-Null
     Copy-Tree (Join-Path $KitRoot 'skills') $skillsDst
     Write-Host "Skills copied to $skillsDst"
+
+    $legacyUiSkill = Join-Path $skillsDst 'h5-game-ui'
+    if (Test-Path $legacyUiSkill) {
+        Remove-Item $legacyUiSkill -Recurse -Force
+        Write-Host "Removed legacy .cursor/skills/h5-game-ui"
+    }
 }
 
 # tests/e2e helpers
@@ -103,47 +109,32 @@ $lessonsMirror = Join-Path $Target 'docs\KIT-LESSONS.md'
 if (Test-Path $lessonsSrc) {
     $banner = @"
 <!-- 只读镜像，由 init-game / sync-kit 从 kit 覆盖。勿在此编辑。 -->
-<!-- 真源与写入：``$KitRoot\docs\LESSONS.md`` — 见 LOOP_README「通用踩坑」 -->
+<!-- 真源与写入：``$KitRoot\docs\LESSONS.md`` — 见 KIT_README「通用踩坑」 -->
 
 "@
     $body = Get-Content $lessonsSrc -Raw -Encoding UTF8
     Set-Content -Path $lessonsMirror -Value ($banner + $body) -Encoding UTF8
 }
 
-# KIT_VERSION
-$ver = Get-Content (Join-Path $KitRoot 'VERSION') -Raw
-Set-Content -Path (Join-Path $docsGame 'KIT_VERSION.txt') -Value $ver.Trim() -Encoding UTF8
+# KIT_VERSION + KIT_README（模板 UTF-8，避免 PS 内嵌中文乱码）
+$ver = (Get-Content (Join-Path $KitRoot 'VERSION') -Raw).Trim()
+$utf8 = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText((Join-Path $docsGame 'KIT_VERSION.txt'), $ver + "`n", $utf8)
 
-# pointer to kit skills
-$kitReadme = @"
-# AI Loop — $GameId
-
-- Kit 版本: $($ver.Trim())
-- Skill: ``.cursor/skills/``（init 时 ``-InstallSkills``）或 ``$KitRoot\skills\``
-- 编排: ``h5-game-orchestrator`` — 输入规则后自动判断步骤
-- 模式: ``$KitRoot\docs\WORKFLOW-MODES.md``（预览 / 完整）
-- 运行时: ``public/core/``（桥 / http / UI / sync，scaffold 已含）
-- 本地服: ``$KitRoot\docs\LOCAL-SERVER-SPEC.md``（scaffold 已含 app.js）
-- 设计: ``$KitRoot\docs\H5-AI-Loop设计方案.md``
-- Loop prompt: ``$KitRoot\loop\LOOP-PROMPT.md``
-- 通用踩坑（**唯一真源，全员共享**）: ``$KitRoot\docs\LESSONS.md``
-- 本仓只读镜像: ``docs/KIT-LESSONS.md``（sync-kit 更新；**勿改镜像**）
-
-## 通用踩坑怎么记（跨游戏）
-
-在任意游戏仓遇到 **换 gameId 也会踩** 的工程/测试坑时，对 AI 说：**「记进工具包 LESSONS」**。
-
-AI 应写入 **kit** ``$KitRoot\docs\LESSONS.md``（不是本仓 `spec.md`）。本游戏玩法/IM 专有 → 只写 ``docs/games/$GameId/spec.md``。
-
-## 下一步
-
-说「新游戏 $GameId，规则是…」→ orchestrator 从 ① 开始。
-后端未给 im/rest 时，预览模式可在 ② 结束。
-"@
-Set-Content -Path (Join-Path $docsGame 'LOOP_README.md') -Value $kitReadme -Encoding UTF8
-
+$tplPath = Join-Path $KitRoot 'docs\templates\KIT_README.md'
+if (Test-Path $tplPath) {
+    $kitReadme = [System.IO.File]::ReadAllText($tplPath, $utf8)
+    $kitReadme = $kitReadme.Replace('{{GameId}}', $GameId).Replace('{{KitVersion}}', $ver).Replace('{{KitRoot}}', $KitRoot).Replace('{{SyncSource}}', 'init-game')
+    [System.IO.File]::WriteAllText((Join-Path $docsGame 'KIT_README.md'), $kitReadme, $utf8)
+} else {
+    Write-Warning "KIT_README template missing: $tplPath"
+}
+$legacyLoop = Join-Path $docsGame 'LOOP_README.md'
+if (Test-Path $legacyLoop) {
+    Remove-Item $legacyLoop -Force
+}
 Write-Host ""
-Write-Host "Done. Initialized Loop toolchain for '$GameId' in:" -ForegroundColor Green
+Write-Host "Done. Initialized Kit toolchain for '$GameId' in:" -ForegroundColor Green
 Write-Host "  $Target"
 Write-Host ""
 Write-Host "Next: npm install && npm run dev"

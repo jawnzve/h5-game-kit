@@ -1,9 +1,11 @@
-# H5 语音房游戏 — AI Loop 设计方案
+﻿# H5 语音房游戏 — AI 设计方案
 
-> **版本**：v1.4  
-> **适用范围**：语音房内 H5 游戏（IM + REST），与周年庆等活动页静态栈分离  
-> **分工**：**后端由同事负责**（撰写并维护 `rest.md` / `im.md` / fixtures）；**AI 只读契约、审查缺口、H5 开发、自动化测试与 bug 修复**；**AI 不访问后端代码仓库**  
-> **技术栈**：Vue 3 + Vite + TypeScript + Pinia — 详见 [`TECH-STACK.md`](TECH-STACK.md)
+> **版本**：v1.5（自研后端 + ①–⑥）  
+> **适用范围**：语音房内 H5 游戏（IM + REST）  
+> **分工**：**后端由本工具链自研**（`h5-game-server`）；契约真源在后端仓；前端 ④ 只读  
+> **技术栈**：Vue 3 + Vite + TypeScript + Pinia — [`TECH-STACK.md`](TECH-STACK.md)  
+> **工作流真源**：[`WORKFLOW-MODES.md`](WORKFLOW-MODES.md)、[`BACKEND-SPEC.md`](BACKEND-SPEC.md)、Rule  
+> **注意**：下文若仍写「后端同事 / 等契约 / AI 不写 im.md」，**以 v1.5 与 WORKFLOW-MODES 为准**。
 
 ---
 
@@ -11,37 +13,26 @@
 
 ### 1.1 背景
 
-- 游戏运行在 **公司 App WebView** 内，通过 `hybirdapp.im` 收 IM、通过 REST 调 **游戏后端 API**（地址见 H5 仓 `http-config.js` 的 `apiBase`）。
-- IM 经 **QNI 桥接** 下发，客户端 action 带 `WEB_` 前缀（如 `WEB_WITCHESPOISON_UPDATE_VIEW`）。
-- **后端实现细节不在 AI 工作范围内**；接口与 IM 结构以后端同事提供的 **`rest.md`、`im.md`、fixtures** 为准。
-- App 有 **测试包**，且与环境（test/prod 等）对应。
+- 游戏在 App WebView；身份经桥；**实时为 Centrifugo 单通道**；REST 调自研 API（`http-config`）。
+- 后端仓 `h5-game-server`：**多游戏一服务**；新游戏只加 Engine + 契约。
+- `hybirdapp-plugin.js` 开发全程禁止修改。
 
 ### 1.2 目标
 
-用户只需输入：
-
-- 游戏目标
-- 游戏规则（阶段、操作、胜负条件）
-- （可选）UI 说明、素材路径
-
-AI 通过 **Loop 工作流** 分阶段自动完成：
-
 | 阶段 | 项 | 说明 |
 |------|-----|------|
-| ① | **product** | 根据游戏规则产出 `product.md`（阶段、页面元素、功能逻辑） |
-| ② | **H5 UI** | Vue SFC + Pinia mock（**不依赖后端契约**） |
-| ③ | **等待** | 等后端 `rest.md`、`im.md`、fixtures（AI 只读审查，不代写） |
-| ④ | **功能** | 按契约接 REST / IM / sync |
-| ⑤ | **L2 测修** | Playwright；**完整模式终点**（需 ③） |
+| ① | product | → **人工确认** |
+| ② | Preview 可交互原型 | → **人工确认**（改 UI 同步 product） |
+| ③ | 自研后端 | 问路径 → 引擎 + 契约 |
+| ④ | 对接 | App IM/REST/sync |
+| ⑤ | L2 | 对照 product 全绿 |
+| ⑥ | sim 验收 | **全绿后**人工多窗 |
 
-**预览模式**：③ 未齐时允许在 **②** 结束，不算失败（见 `WORKFLOW-MODES.md`）。
+预览模式可停在 ②：见 `WORKFLOW-MODES.md`。
 
-### 1.3 非目标（AI / Loop 不负责）
+### 1.3 非目标
 
-- 不开发、不读取后端代码仓库（Go 服务、数据库、QNI 发 IM 等由后端同事维护）
-- **不撰写、不修改** `rest.md`、`im.md`（契约由后端同事设计并提供；AI 只读、审查、直接使用）
-- **不推断或编造** IM / REST 业务字段；缺 fixture 时向后端索取，不用 AI 虚构样例充当契约
-- **App 真机 / WebView 联调**（不在本工具链终点范围内）
+- 不自动 clone 后端；不编造契约字段；不改桥文件；真机联调默认不在终点内。
 
 ---
 
@@ -51,11 +42,13 @@ AI 通过 **Loop 工作流** 分阶段自动完成：
 
 | 角色 | 职责 |
 |------|------|
-| **产品/你** | 提供游戏目标与规则；确认契约与测试场景 |
-| **后端同事** | REST、IM 广播、QNI 对接；**撰写并维护** `rest.md`、`im.md`、真实 IM 样例 JSON |
-| **AI + Loop** | 规则 → UI →（等契约）→ 功能 → L2 测修至全绿；契约 **只读** |
+| **产品/你** | 规则；确认 ①②；⑥ sim 验收 |
+| **AI** | ①–⑤；自研后端与契约；H5 对接；⑤ 可用 `/loop` 测修 |
+| **运维** | 部署后端 / Centrifugo / Redis |
 
-### 2.2 架构图（主流程五步）
+### 2.2 主流程（①–⑥）
+
+真源见 `WORKFLOW-MODES.md`。下列旧「五步 / 等同事」示意图保留仅供对照，**以 WORKFLOW-MODES 为准**。
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -63,7 +56,7 @@ AI 通过 **Loop 工作流** 分阶段自动完成：
 └──────────────────────────┬──────────────────────────────────┘
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ ② AI：H5 UI 生成（spec + 各阶段页面 / 样式 / mock 预览）      │
+│ ② AI：Preview 原型（spec + 各阶段页面 / 样式 / mock 预览）      │
 │    不依赖 rest.md / im.md；可 web-preview 或本地 mock 状态   │
 └──────────────────────────┬──────────────────────────────────┘
                            ▼
@@ -77,7 +70,7 @@ AI 通过 **Loop 工作流** 分阶段自动完成：
 └──────────────────────────┬──────────────────────────────────┘
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ ⑤ AI Loop：Playwright L2 → last-run.json → 修 H5 → 重测      │
+│ ⑤ `/loop`：Playwright L2 → last-run.json → 修 H5 → 重测      │
 │    全绿 = 完成（产品文档 + UI + 前端逻辑 + 后端对接）          │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -197,10 +190,10 @@ applyGameState(state);
 
 | 阶段 | 需要什么 | 缺则 |
 |------|----------|------|
-| **② UI 生成** | 用户规则 + `spec.md` | 只补 spec，**可先出 UI** |
+| **② Preview** | 用户规则 + `spec.md` | 只补 spec，**可先出 Preview** |
 | **④ 功能实现 + ⑤ L2** | `rest.md`、`im.md`、fixtures 齐备且审查通过 | **Blocked: Backend**，停在 ③ |
 
-**③ 等待后端** 可与 ② **并行**：UI 先出稿联调视觉；后端文档就绪后再进入 ④。AI **不撰写** `im.md` / `rest.md`，只读审查并输出 `CONTRACT_GAPS.md`。
+**③ 等待后端** 可与 ② **并行**：Preview 先出稿联调视觉；后端文档就绪后再进入 ④。AI **不撰写** `im.md` / `rest.md`，只读审查并输出 `CONTRACT_GAPS.md`。
 
 后端应交付：
 
@@ -290,7 +283,7 @@ docs/games/<gameId>/
 ### 7.1 Loop 成功标准（流程终点）
 
 - **`spec.md` 中声明的全部 L2 用例通过**（含各阶段 **全部视角**，见 §10.2）— **即项目完成**
-- 隐含前提：① `product.md` 已确认、② UI 已完成、④ IM/REST/sync 已接入
+- 隐含前提：① `product.md` 已确认、② Preview 已完成、④ IM/REST/sync 已接入
 - 不得仅跑「每阶段 1 条 smoke」即视为 Loop 成功——**未写入 spec 的视角不在保障范围内**
 - `tests/e2e/last-run.json` 中无 `pageErrors`，无 `console` type=error（或可接受白名单）
 - 不读取、不修改后端代码；契约问题交后端同事
@@ -336,7 +329,7 @@ Skill 与主流程五步（§9.0）对应关系：
 |------|--------|
 | 编排 | `h5-game-orchestrator` |
 | ① 输入规则 | `h5-game-spec` → `product.md` |
-| ② UI 生成 | `h5-game-ui` |
+| ② Preview | `h5-game-preview` |
 | ③ 等待后端 | `CONTRACT_GAPS.md` |
 | ④ 功能实现 | `h5-game-dev` |
 | ⑤ 测修 | `h5-game-test`（完整模式终点） |
@@ -351,7 +344,7 @@ Skill 与主流程五步（§9.0）对应关系：
 | **输出** | **`product.md`**；**不含** `im.md` / `rest.md` |
 | **约束** | 玩法写 product；IM/REST 等后端；确认前不进 ② |
 
-### 8.2 Skill：`h5-game-ui`
+### 8.2 Skill：`h5-game-preview`
 
 | 项 | 内容 |
 |----|------|
@@ -406,7 +399,7 @@ Skill 与主流程五步（§9.0）对应关系：
 | 步 | 名称 | 负责 | 产出 / 动作 |
 |----|------|------|-------------|
 | **①** | 输入游戏规则 | 你 | gameId、目标、规则、UI 说明 |
-| **②** | H5 UI 生成 | AI `h5-game-spec` + `h5-game-ui` | **`product.md` 确认** + 各阶段 UI（mock） |
+| **②** | Preview 原型 | AI `h5-game-spec` + `h5-game-preview` | **`product.md` 确认** + 各阶段 UI（mock） |
 | **③** | 等待后端文档 | 后端 + 你 | `rest.md`、`im.md`、fixtures；`CONTRACT_GAPS.md` |
 | **④** | 功能实现 | AI `h5-game-dev` | IM/REST/sync；`spec.md` 视角矩阵 + L2 用例 |
 | **⑤** | L2 测修 | AI `h5-game-test` + `/loop` | **完整模式终点**；预览模式见 `WORKFLOW-MODES.md` |
@@ -418,7 +411,7 @@ Skill 与主流程五步（§9.0）对应关系：
 ```
 ① 输入规则 → h5-game-orchestrator
   → h5-game-spec → product.md（待确认）
-  → 确认后 → h5-game-ui → mock UI
+  → 确认后 → h5-game-preview → mock Preview
   → ③ 等待 rest.md / im.md / fixtures
       → Blocked → CONTRACT_GAPS → 预览终点（②）允许
       → Ready → h5-game-dev → h5-game-test（L2）
@@ -428,7 +421,7 @@ Skill 与主流程五步（§9.0）对应关系：
 ### 9.2 首轮对话流程
 
 1. **①** 用户提供 gameId、规则 → `h5-game-orchestrator` → `product.md` → **请确认**
-2. 确认后 **②** `h5-game-ui`（无骨架 → `new-game.ps1`）
+2. 确认后 **②** `h5-game-preview`（无骨架 → `new-game.ps1`）
 3. **③** 并行等后端；Blocked 时 **预览终点 = ②**
 4. 契约齐 → 补 `spec.md` 视角矩阵 → **④** `h5-game-dev`
 5. **⑤** `h5-game-test` / `/loop` 至 L2 全绿（完整终点）
@@ -473,7 +466,7 @@ Skill 与主流程五步（§9.0）对应关系：
 
 ## 10. 测试场景与多视角
 
-> **时机**：② UI 阶段可在 `spec.md` 写 **玩法阶段**；**视角矩阵与 L2 用例表** 在 **③ 契约到齐、进入 ④ 前** 根据 `im.md` 字段补全（见 §9.2 步骤 4）。
+> **时机**：② Preview 阶段可在 `spec.md` 写 **玩法阶段**；**视角矩阵与 L2 用例表** 在 **③ 契约到齐、进入 ④ 前** 根据 `im.md` 字段补全（见 §9.2 步骤 4）。
 
 ### 10.1 基础场景（功能维度）
 
@@ -562,7 +555,7 @@ App 测试包 iOS/Android 真机联调 **不在本工具链终点范围内**。�
 | 误抄其他游戏 IM 解析 | Rule：**以当前游戏 `im.md` 为准**；禁止跨游戏复制 manager 解析段 |
 | AI 代写契约 | Rule：**禁止** AI 撰写/修改 `im.md`、`rest.md`；缺则 Blocked: Backend |
 | Loop 改范围过大 | Rule：单次仅改失败用例相关 H5 / 测试文件 |
-| 后端未 ready | ② UI 可先完成；④⑤ Blocked；**预览模式允许在 ② 结束** |
+| 后端未 ready | ② Preview 可先完成；④⑤ Blocked；**预览模式允许在 ② 结束** |
 | 只测单一 userId，漏掉其他视角 | `spec.md` 维护视角矩阵；每视角一条 L2；Loop 全绿 = 矩阵全覆盖 |
 | fixture 与 mock userId 不对齐 | §5.2 审查；用例注释写明 userId 与 `currentPlayer` / `players` 对应关系 |
 
@@ -572,11 +565,11 @@ App 测试包 iOS/Android 真机联调 **不在本工具链终点范围内**。�
 
 | 阶段 | 内容 | 负责人 |
 |------|------|--------|
-| W0 | 定 gameId；**① 输入规则 → ② UI 生成**（mock 预览） | 你 + AI |
+| W0 | 定 gameId；**① 输入规则 → ② Preview**（mock 预览） | 你 + AI |
 | W0′ | **③ 后端提供** `rest.md`、`im.md`、fixture（可与 W0 并行） | 后端 |
 | W1 | 4 个 Skill + Rule（含流程顺序、契约只读） | 你 + AI |
 | W2 | **④ 功能接入** + L2 首条用例 + `last-run.json` | AI |
-| W3 | **⑤** 补全视角矩阵用例，dynamic loop 跑通至全绿（**终点**） | AI Loop |
+| W3 | **⑤** 补全视角矩阵用例，dynamic loop 跑通至全绿（**终点**） | `/loop` |
 | W4 | （可选）L3 dev API 联调 | 你 + 后端 |
 
 ---
@@ -599,17 +592,17 @@ h5-game-kit/
 
 > 后端服务由同事独立维护；AI 工作区 **不包含** 后端代码仓库，仅使用后端提供的 `im.md` / `rest.md` / fixtures。
 
-### 14.2 P0 — `h5-game-kit`（Loop / 契约 / 测试）
+### 14.2 P0 — `h5-game-kit`（Kit / 契约 / 测试）
 
 | 资源 | 提取后路径 | 状态 |
 |------|------------|------|
-| 设计方案（本文） | `docs/H5-AI-Loop设计方案.md` + `README.md` | **已提取** |
+| 设计方案（本文） | `docs/H5-AI设计方案.md` + `README.md` | **已提取** |
 | 游戏规则模板 | `docs/templates/spec.template.md` | **已提取** |
 | 后端契约说明 | `docs/templates/BACKEND-CONTRACTS.README.md` | **已提取** |
 | 契约缺口模板 | `docs/templates/CONTRACT_GAPS.template.md` | **已提取** |
 | IM fixture 引用说明 | `docs/templates/fixtures/README.md` | **已提取** |
 | Skill：`h5-game-spec` | `skills/h5-game-spec/SKILL.md` | **已提取** |
-| Skill：`h5-game-ui` | `skills/h5-game-ui/SKILL.md` | **已提取** |
+| Skill：`h5-game-preview` | `skills/h5-game-preview/SKILL.md` | **已提取** |
 | Skill：`h5-game-dev` | `skills/h5-game-dev/SKILL.md` | **已提取** |
 | Skill：`h5-game-test` | `skills/h5-game-test/SKILL.md` | **已提取** |
 | Skill：`h5-game-orchestrator` | `skills/h5-game-orchestrator/SKILL.md` | **已提取** |
@@ -663,14 +656,14 @@ h5-game-kit/
 
 | 方式 | 说明 |
 |------|------|
-| **新建** | `new-game.ps1` — scaffold（含 `public/core`）+ Loop 工具链 |
-| **升级 Loop** | `sync-kit.ps1` — Rule、Skills、E2E helpers（**不覆盖** `src/`、`public/core/`） |
+| **新建** | `new-game.ps1` — scaffold（含 `public/core`）+ Kit 工具链 |
+| **升级 Kit** | `sync-kit.ps1` — Rule、Skills、E2E helpers（**不覆盖** `src/`、`public/core/`） |
 | **升级 runtime** | 从 kit `templates/scaffold/public/core/` 手动合并到该游戏仓 |
 
 ### 14.7 提取完成检查项
 
 - [x] `h5-game-kit` 含 §14.2 全部 P0 资源
-- [x] `new-game.ps1` 可初始化 scaffold + Loop 工具链
+- [x] `new-game.ps1` 可初始化 scaffold + Kit 工具链
 - [x] `templates/scaffold/public/core/` 含 bridge / utils / components / vendor
 - [x] 本文档 §14.2 / §14.3 已更新为实际路径（**无 h5-game-common**）
 
@@ -702,11 +695,11 @@ npx playwright test tests/e2e/<gameId>.spec.js
 | 周年庆活动 | `event-anniversary`（静态活动栈，**非**语音房游戏流程） |
 | H5 API 配置 | Vite `.env.*` 或 `src/config/env.ts` → apiBase |
 | 技术栈约定 | `h5-game-kit/docs/TECH-STACK.md` |
-| Loop 工具链 | `h5-game-kit/` — 见 **§14.2** |
+| Kit 工具链 | `h5-game-kit/` — 见 **§14.2** |
 | runtime core | 各游戏仓 `public/core/`（自 scaffold 拷贝，见 **§14.3**） |
 
 ---
 
 ## 17. 一句话总结
 
-**① 输入规则 → orchestrator 编排 → ② UI（mock）→ ③ 等后端 → ④ 接功能 → ⑤ L2 全绿（完整终点）；③ 未齐可在 ② 结束（预览）。**
+**① 输入规则 → orchestrator 编排 → ② Preview（mock）→ ③ 等后端 → ④ 接功能 → ⑤ L2 全绿（完整终点）；③ 未齐可在 ② 结束（预览）。**

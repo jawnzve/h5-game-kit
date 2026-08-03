@@ -1,24 +1,24 @@
 # 后端契约说明 — {{gameName}}（gameId: `{{gameId}}`）
 
-> **由后端同事提供**，格式 **不固定**；AI **只读**实际文档，不套用 kit 模板。
+> **契约真源在自研后端仓** `h5-game-server/docs/games/{{gameId}}/`（本前端仓不存副本）。  
+> 由本工具链在 **③** 与引擎一并维护；前端 **④** 只读审查与引用。
 
-## 预期交付物
+## 交付物（后端仓路径）
 
-| 文件 | 维护人 | 说明 |
-|------|--------|------|
-| `im.md`（或等价文件名） | 后端 | IM/推送：连接、channel、消息 JSON 等，写法因人/项目而异 |
-| `rest.md`（或等价文件名） | 后端 | REST 路径、入参、响应、错误码、sync |
-| `fixtures/*.json` | 后端 | 真实消息样例，与 `im.md` 一致 |
+| 文件 | 说明 |
+|------|------|
+| [`im.md`](../../../../h5-game-server/docs/games/{{gameId}}/im.md) | Centrifugo、channel、信封、snapshot |
+| [`rest.md`](../../../../h5-game-server/docs/games/{{gameId}}/rest.md) | REST：身份、sync、actions |
+| [`fixtures/`](../../../../h5-game-server/docs/games/{{gameId}}/fixtures/) | 与 im 一致的样例 JSON |
 
-**推荐路径**（可协商）：`docs/games/{{gameId}}/`  
-老项目可用其他路径（如 `im-messages.md`）；以仓库内 **实际路径** 为准，记入 `CONTRACT_GAPS.md`。
+相对路径按游戏仓与 `h5-game-server` 的实际相对位置调整。
 
 ## AI 行为
 
-- **不生成、不修改** 上述契约文件
-- ③ 阶段：读后端提供的文档 → 更新 `CONTRACT_GAPS.md`
-- 缺文档 → **Blocked: Backend**
+- **③**：在后端仓撰写/修改契约，须与引擎一致
+- **④**：前端仓只读上述文件 → 更新 `CONTRACT_GAPS.md`；**禁止**在前端仓复制改写契约
+- 缺文档 → 回 ③ 补齐，或标 **Blocked: Backend**
 
 ## fixtures
 
-见 `fixtures/README.md`。
+见后端仓 `fixtures/README.md`；前端勿编造业务字段。

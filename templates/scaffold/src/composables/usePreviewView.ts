@@ -38,7 +38,7 @@ export function usePreviewView(perspective: Ref<PreviewPerspective> | PreviewPer
 
   /** 切换视角 / 阶段时同步本视口的默认状态；② 按 product 实现 */
   function applyPerspectivePreset() {
-    /* h5-game-ui */
+    /* h5-game-preview */
   }
 
   return {

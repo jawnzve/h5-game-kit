@@ -1,6 +1,6 @@
 # h5-game-kit
 
-语音房 H5 游戏的 **AI Loop 工具链起点包**：Skill、Rule、测试脚手架、文档模板。
+语音房 H5 游戏的 **工具链起点包**（Skill、Rule、scaffold、文档）：自研后端约定 + ①–⑥ 工作流。
 
 [[_TOC_]]
 
@@ -13,36 +13,57 @@
 git clone https://github.com/jawnzve/h5-game-kit.git
 ```
 
-**技术栈约定**：Vue 3 + Vite + TypeScript + Pinia — 见 [`docs/TECH-STACK.md`](docs/TECH-STACK.md)。
-
-完整设计见 [`docs/H5-AI-Loop设计方案.md`](docs/H5-AI-Loop设计方案.md)。
+**技术栈约定**：Vue 3 + Vite + TypeScript + Pinia — 见 [`docs/TECH-STACK.md`](docs/TECH-STACK.md)。  
+**工作流**：[`docs/WORKFLOW-MODES.md`](docs/WORKFLOW-MODES.md) · **自研后端**：[`docs/BACKEND-SPEC.md`](docs/BACKEND-SPEC.md)  
+完整设计见 [`docs/H5-AI设计方案.md`](docs/H5-AI设计方案.md)。
 
 ## 目录结构
 
 ```
 h5-game-kit/
+├── VERSION / CHANGELOG.md
 ├── docs/
-│   ├── TECH-STACK.md
-│   ├── LESSONS.md
-│   ├── WORKFLOW-MODES.md     # 预览 / 完整两种终点
-│   ├── LOCAL-SERVER-SPEC.md  # 本地服 / http-config / E2E 行为规格
-│   └── H5-AI-Loop设计方案.md
-├── skills/                  # 7 个 Cursor Skill
-│   ├── h5-game-orchestrator/ # 总控：输入规则后自动编排步骤
-│   ├── h5-game-spec/        # ① 产品文档
-│   ├── h5-game-ui/          # ② UI
-│   ├── h5-game-dev/         # ④ 功能
-│   ├── h5-game-test/        # ⑤ 测修
-│   ├── h5-game-lessons/     # 通用踩坑记录（④⑤ 疑难后）
-│   └── agentmd-creator/     # 游戏仓 AGENT.md（游戏专有上下文，可选）
-├── rules/                   # 复制到游戏仓 .cursor/rules/
-├── loop/                    # /loop dynamic 用的 prompt 模板
-├── tests/e2e/               # Playwright helpers + 用例模板
-├── scripts/                 # init-game.ps1、scaffold-game.ps1、new-game.ps1、sync-kit.ps1、run-e2e.ps1、fix-product-md-anchors.mjs
-├── templates/scaffold/      # Vite 工程骨架（scaffold-game.ps1 拷贝）
+│   ├── WORKFLOW-MODES.md          # ①–⑥ / 预览·完整终点
+│   ├── BACKEND-SPEC.md            # 自研后端（多游戏一服务）
+│   ├── TECH-STACK.md              # 技术栈与目录约定
+│   ├── LOCAL-SERVER-SPEC.md       # 本地服 / http-config / sim-lobby
+│   ├── PREVIEW-UI-SPEC.md         # Preview 外壳规范
+│   ├── LESSONS.md                 # 跨游戏通用踩坑（真源）
+│   ├── H5-AI设计方案.md
+│   └── templates/
+│       ├── KIT_README.md          # → 游戏仓 docs/games/<id>/KIT_README.md
+│       ├── product-doc.template.md / product-doc.example.md
+│       ├── spec.template.md
+│       ├── CONTRACT_GAPS.template.md
+│       ├── BACKEND-CONTRACTS.README.md
+│       └── fixtures/README.md
+├── skills/
+│   ├── h5-game-orchestrator/      # 总控
+│   ├── h5-game-spec/              # ① 产品文档
+│   ├── h5-game-preview/           # ② Preview 原型
+│   ├── h5-game-server/            # ③ 自研后端引擎
+│   ├── h5-game-dev/               # ④ 对接
+│   ├── h5-game-test/              # ⑤ L2 测修（全绿后提示 ⑥）
+│   ├── h5-game-lessons/           # 通用踩坑记录
+│   └── agentmd-creator/           # 可选 AGENT.md
+├── rules/
+│   └── h5-game-kit.mdc            # → 游戏仓 .cursor/rules/
+├── loop/                          # /loop dynamic 用 prompt
+├── tests/e2e/                     # Playwright helpers + 用例模板
+├── scripts/
+│   ├── new-game.ps1 / scaffold-game.ps1 / init-game.ps1 / sync-kit.ps1
+│   ├── run-e2e.ps1
+│   └── fix-product-md-anchors.mjs
+├── templates/scaffold/            # Vite 工程骨架（new-game 拷贝）
+│   ├── public/sim-lobby.html      # ⑥ 多窗 sim（{{gameId}} 占位）
+│   ├── public/core/               # 桥 / http / UI 组件（禁改 hybirdapp-plugin.js）
+│   ├── docs/APP-SYNC-NOTES.md     # ④ 从 werewords 回拷说明
+│   └── src/lib/throttle.ts, server-time.ts, …
 ├── playwright.config.template.js
 └── package.template.json
 ```
+
+> 游戏仓**不**复制整份 `docs/`；用 `KIT_README.md` 指回本仓路径。`LESSONS` 仅镜像为游戏仓 `docs/KIT-LESSONS.md`。
 
 ## 新游戏快速开始
 
@@ -61,7 +82,7 @@ h5-game-kit/
 
 等价于 **`scaffold-game.ps1`**（Vite + `app.js` + `http-config` + bridge + 双入口）+ **`init-game.ps1`**（Rule、Skill、E2E、docs）。
 
-已有工程只需 Loop 工具链时：
+已有工程只需 Kit 工具链时：
 
 ```powershell
 & "<kit-root>\scripts\init-game.ps1" `
@@ -87,22 +108,23 @@ h5-game-kit/
 | **复制到个人** | 复制 `skills/*` → `%USERPROFILE%\.cursor\skills\` |
 | **复制到项目** | 复制 `skills/*` → `<game-repo>/.cursor/skills/` |
 
-### 4. 五步流程与两种终点
+### 4. 六步流程与两种终点
 
 | 步 | Skill |
 |----|-------|
-| ① 产品文档 | `h5-game-spec` |
-| ② UI | `h5-game-ui` |
-| ③ 等后端 | 更新 `CONTRACT_GAPS.md` |
-| ④ 功能 | `h5-game-dev` |
-| ⑤ 测修 | `h5-game-test` |
+| ① 产品文档 → 人工确认 | `h5-game-spec` |
+| ② Preview 原型 → 人工确认 | `h5-game-preview` |
+| ③ 自研后端 | `h5-game-server`（先问本机后端路径） |
+| ④ 功能对接 | `h5-game-dev` |
+| ⑤ L2 测修全绿 | `h5-game-test` |
+| ⑥ 人工 sim 验收 | 用户用 `sim-lobby.html`（⑤ 之后） |
 
 | 模式 | 条件 | 终点 |
 |------|------|------|
-| **预览** | ③ 后端未给契约 | ② mock UI 可预览，**允许不到 ⑤** |
-| **完整** | ③ 契约齐备 | ⑤ L2 全绿 |
+| **预览** | ③ 未齐 | ② 已人工确认即可停 |
+| **完整** | ③ 齐 | ⑤ 全绿 + ⑥ 人工 sim |
 
-详见 [`docs/WORKFLOW-MODES.md`](docs/WORKFLOW-MODES.md)。
+详见 [`docs/WORKFLOW-MODES.md`](docs/WORKFLOW-MODES.md)、[`docs/BACKEND-SPEC.md`](docs/BACKEND-SPEC.md)。
 
 ### 5. 本地开发与 Playwright
 

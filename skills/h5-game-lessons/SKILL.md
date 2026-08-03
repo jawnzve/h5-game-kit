@@ -1,7 +1,7 @@
 ---
 name: h5-game-lessons
 description: >-
-  H5 Game Loop 通用踩坑记录：判断是否记入 kit docs/LESSONS.md（跨游戏工程/测试陷阱）。
+  H5 Game Kit 通用踩坑记录：判断是否记入 kit docs/LESSONS.md（跨游戏工程/测试陷阱）。
   不记单游戏 IM/玩法。触发：疑难解决后、人工纠正工程类错误、用户说「记一下这个坑」。
 ---
 # h5-game-lessons
@@ -75,7 +75,7 @@ description: >-
 
 1. 用户说 **「记进工具包 LESSONS」** / **「这是通用坑」**
 2. 过 rubric（跨游戏 + 非显而易见 + 可执行）
-3. **直接编辑 kit 真源** `docs/LESSONS.md`（路径见游戏仓 `docs/games/<gameId>/LOOP_README.md` 里的 Kit 根目录）
+3. **直接编辑 kit 真源** `docs/LESSONS.md`（路径见游戏仓 `docs/games/<gameId>/KIT_README.md` 里的 Kit 根目录）
 4. **禁止**只写游戏仓 `spec.md` 当通用坑；**禁止**改游戏仓 `docs/KIT-LESSONS.md`（只读镜像）
 5. 写入后提示：其他游戏 `sync-kit.ps1` 可刷新本地 `KIT-LESSONS.md` 镜像
 

@@ -6,5 +6,5 @@
 </script>
 
 <template>
-  <!-- h5-game-ui：在此添加游戏专属调试控件 -->
+  <!-- h5-game-preview：在此添加游戏专属调试控件 -->
 </template>

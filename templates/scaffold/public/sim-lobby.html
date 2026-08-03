@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- scaffold：new-game 时替换 {{gameId}} / {{gameTitle}} -->
+    <title>{{gameTitle}} Sim Lobby</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Segoe UI", "PingFang SC", sans-serif;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #101820;
+        color: #f4f7fa;
+      }
+      .card {
+        width: min(92vw, 440px);
+        padding: 28px 24px;
+        border-radius: 16px;
+        background: #1a2430;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      }
+      h1 {
+        margin: 0 0 16px;
+        font-size: 22px;
+      }
+      label {
+        display: block;
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: rgba(244, 247, 250, 0.75);
+      }
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 14px;
+        height: 42px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        padding: 0 12px;
+        background: #0f1620;
+        color: inherit;
+        font-size: 15px;
+      }
+      .row {
+        display: flex;
+      }
+      .row > *:not(:last-child) {
+        margin-right: 10px;
+      }
+      button {
+        flex: 1 1 0;
+        min-width: 0;
+        height: 44px;
+        border: 0;
+        border-radius: 10px;
+        background: #3d8bfd;
+        color: #fff;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      button.ghost {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+      .hint {
+        margin-top: 12px;
+        font-size: 12px;
+        color: rgba(244, 247, 250, 0.55);
+        word-break: break-all;
+      }
+      .seats {
+        display: none;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .seats.show {
+        display: block;
+      }
+      .seats h2 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        font-weight: bold;
+      }
+      .seat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .seat-grid button {
+        height: 40px;
+        font-size: 13px;
+        background: rgba(61, 139, 253, 0.22);
+        border: 1px solid rgba(61, 139, 253, 0.45);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Sim Lobby</h1>
+      <label for="roomId">roomId</label>
+      <input id="roomId" />
+      <label for="count">窗口数</label>
+      <input id="count" type="number" min="1" max="8" value="4" />
+      <div class="row">
+        <button type="button" class="ghost" id="regen">换房号</button>
+        <button type="button" id="prepare">生成座位</button>
+      </div>
+      <div class="seats" id="seats">
+        <h2>点击座位打开窗口</h2>
+        <div class="seat-grid" id="seatGrid"></div>
+        <p class="hint" id="hint"></p>
+      </div>
+    </div>
+    <script>
+      /** 构建/new-game 替换为真实 gameId */
+      var GAME_ID = '{{gameId}}';
+
+      function randomRoom() {
+        return 'sim-room-' + Math.random().toString(36).slice(2, 6);
+      }
+      var roomInput = document.getElementById('roomId');
+      var countInput = document.getElementById('count');
+      var seats = document.getElementById('seats');
+      var seatGrid = document.getElementById('seatGrid');
+      var hint = document.getElementById('hint');
+      roomInput.value = randomRoom();
+
+      function seatUserId(seat) {
+        return 'sim-seat-' + seat;
+      }
+
+      function appUrl(roomId, seat) {
+        var u = new URL('/games/' + GAME_ID + '/app-index.html', location.origin);
+        u.searchParams.set('roomId', roomId);
+        if (seat != null) u.searchParams.set('simUserId', seatUserId(seat));
+        return u.toString();
+      }
+
+      function currentRoom() {
+        var roomId = (roomInput.value || '').trim() || randomRoom();
+        roomInput.value = roomId;
+        return roomId;
+      }
+
+      function openOne(seat) {
+        var url = appUrl(currentRoom(), seat);
+        var win = window.open(url, '_blank');
+        if (!win) {
+          hint.textContent = '被弹窗拦截了：请允许本站弹窗，或再点一次该座位。\n' + url;
+          return;
+        }
+        hint.textContent = url;
+      }
+
+      function renderSeats() {
+        var n = Math.max(1, Math.min(8, Number(countInput.value) || 4));
+        seatGrid.innerHTML = '';
+        for (var i = 1; i <= n; i++) {
+          ;(function (index) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.title = seatUserId(index);
+            btn.textContent = '座位 ' + index;
+            btn.onclick = function () {
+              openOne(index);
+            };
+            seatGrid.appendChild(btn);
+          })(i);
+        }
+        seats.classList.add('show');
+        hint.textContent = '';
+      }
+
+      document.getElementById('regen').onclick = function () {
+        roomInput.value = randomRoom();
+        if (seats.classList.contains('show')) renderSeats();
+        else hint.textContent = '';
+      };
+      document.getElementById('prepare').onclick = renderSeats;
+      countInput.addEventListener('change', function () {
+        if (seats.classList.contains('show')) renderSeats();
+      });
+    </script>
+  </body>
+</html>

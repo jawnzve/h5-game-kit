@@ -7,7 +7,7 @@
   拷贝 templates/scaffold/ 到目标目录，替换 {{gameId}} / {{gameName}}，
   并将 games/{{gameId}}/ 重命名为 games/<GameId>/。
 
-  不含 Loop 工具链 — 通常与 init-game.ps1 配合，或直接用 new-game.ps1。
+  不含 Kit 工具链 — 通常与 init-game.ps1 配合，或直接用 new-game.ps1。
 
 .EXAMPLE
   & "<kit-root>\scripts\scaffold-game.ps1" `
@@ -145,4 +145,4 @@ Write-Host "  npm install"
 Write-Host "  npm run dev"
 Write-Host '  npm run build; npm start'
 Write-Host ""
-Write-Host ("Loop: init-game.ps1 -GameId " + $GameId + " -Target ... -InstallSkills")
+Write-Host ("Kit: init-game.ps1 -GameId " + $GameId + " -Target ... -InstallSkills")

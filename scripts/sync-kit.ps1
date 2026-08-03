@@ -4,7 +4,7 @@
   将 h5-game-kit 的工具链更新同步到已初始化的游戏仓库（不覆盖游戏业务文件）。
 
 .DESCRIPTION
-  覆盖：Rule、（可选）Skills、e2e helpers、run-e2e.ps1、KIT_VERSION、LOOP_README
+  覆盖：Rule、（可选）Skills、e2e helpers、run-e2e.ps1、KIT_VERSION、KIT_README
   不覆盖：product.md、spec.md、<gameId>.spec.js、src/、im.md、fixtures
 
 .EXAMPLE
@@ -62,6 +62,13 @@ if ($InstallSkills) {
     New-Item -ItemType Directory -Path $skillsDst -Force | Out-Null
     Copy-Tree (Join-Path $KitRoot 'skills') $skillsDst
     Write-Host "[sync] .cursor/skills/*"
+
+    # 清理改名前的旧 Skill，避免与 h5-game-preview 并存
+    $legacyUiSkill = Join-Path $skillsDst 'h5-game-ui'
+    if (Test-Path $legacyUiSkill) {
+        Remove-Item $legacyUiSkill -Recurse -Force
+        Write-Host "[sync] removed legacy .cursor/skills/h5-game-ui"
+    }
 }
 
 # E2E helpers（不覆盖游戏 <gameId>.spec.js）
@@ -104,31 +111,28 @@ if (Test-Path $lessonsSrc) {
     Write-Host "[sync] docs/KIT-LESSONS.md (read-only mirror of kit LESSONS)"
 }
 
-# KIT_VERSION + LOOP_README
+# KIT_VERSION + KIT_README（模板 UTF-8，避免 PS 内嵌中文乱码）
 $docsGame = Join-Path $Target "docs\games\$GameId"
 if (-not (Test-Path $docsGame)) {
-    Write-Warning "docs/games/$GameId not found — skip KIT_VERSION / LOOP_README"
+    Write-Warning "docs/games/$GameId not found — skip KIT_VERSION / KIT_README"
 } else {
-    Set-Content -Path (Join-Path $docsGame 'KIT_VERSION.txt') -Value $ver -Encoding UTF8
-    $kitReadme = @"
-# AI Loop — $GameId
+    $utf8 = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText((Join-Path $docsGame 'KIT_VERSION.txt'), $ver + "`n", $utf8)
 
-- Kit 版本: $ver（sync-kit 更新）
-- Skill: ``.cursor/skills/``（sync ``-InstallSkills``）或 ``$KitRoot\skills\``
-- 编排: ``h5-game-orchestrator``
-- 模式: ``$KitRoot\docs\WORKFLOW-MODES.md``
-- 技术栈 / 运行时分层: ``$KitRoot\docs\TECH-STACK.md``（§5.5 JS 与 TS）
-- 设计: ``$KitRoot\docs\H5-AI-Loop设计方案.md``
-- Loop: ``$KitRoot\loop\LOOP-PROMPT.md``
-- 通用踩坑（**唯一真源**）: ``$KitRoot\docs\LESSONS.md``
-- 本仓镜像: ``docs/KIT-LESSONS.md``（sync-kit 更新）
-
-记入通用坑：对 AI 说「记进工具包 LESSONS」→ 改 kit 真源，勿改镜像。
-
-升级 kit 后在本仓执行: ``sync-kit.ps1 -GameId $GameId -InstallSkills``
-"@
-    Set-Content -Path (Join-Path $docsGame 'LOOP_README.md') -Value $kitReadme -Encoding UTF8
-    Write-Host "[sync] docs/games/$GameId/KIT_VERSION.txt, LOOP_README.md"
+    $tplPath = Join-Path $KitRoot 'docs\templates\KIT_README.md'
+    if (-not (Test-Path $tplPath)) {
+        Write-Warning "KIT_README template missing: $tplPath"
+    } else {
+        $kitReadme = [System.IO.File]::ReadAllText($tplPath, $utf8)
+        $kitReadme = $kitReadme.Replace('{{GameId}}', $GameId).Replace('{{KitVersion}}', $ver).Replace('{{KitRoot}}', $KitRoot).Replace('{{SyncSource}}', 'sync-kit')
+        [System.IO.File]::WriteAllText((Join-Path $docsGame 'KIT_README.md'), $kitReadme, $utf8)
+        Write-Host "[sync] docs/games/$GameId/KIT_VERSION.txt, KIT_README.md"
+    }
+    $legacyLoop = Join-Path $docsGame 'LOOP_README.md'
+    if (Test-Path $legacyLoop) {
+        Remove-Item $legacyLoop -Force
+        Write-Host "[sync] removed legacy LOOP_README.md"
+    }
 }
 
 Write-Host ""

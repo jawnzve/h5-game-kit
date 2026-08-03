@@ -1,6 +1,6 @@
 ---
 description: >-
-  语音房 H5 游戏 AI Loop 约束（流程顺序、双模式终点、契约只读、编排、交互原则）
+  语音房 H5 游戏 AI 约束（①–⑥ 流程、门禁、自研后端、桥禁改、编排、交互原则）
 alwaysApply: true
 ---
 
@@ -8,79 +8,83 @@ alwaysApply: true
 
 ## 范围
 
-- 本游戏仓库 **H5 only**
-- **技术栈**：Vue 3 + Vite + TypeScript + Pinia（见 kit `docs/TECH-STACK.md`）；禁止新游戏使用 React 作为主 UI 框架
-- 后端以同事提供的 **`im.md`、`rest.md`、fixtures** 为唯一依据；**不读取、不修改**后端代码或仓库
+- **游戏前端仓**：**H5 only**（Vue 3 + Vite + TypeScript + Pinia，见 kit `docs/TECH-STACK.md`）；禁止新游戏用 React 作主 UI
+- **后端**：由 **本工具链自研**（默认仓 `h5-game-server`：Go + Centrifugo + Redis，多游戏一服务）；可读改该后端仓
+- **契约真源**：`im.md` / `rest.md` / fixtures 写在后端仓 `docs/games/<gameId>/`；**前端仓不存副本**，只维护指针。④ 只读真源，**禁止编造**业务字段
 
-## 主流程顺序
+## 主流程顺序（①–⑥）
 
-① 产品文档（`product.md`）→ ② UI（mock）→ ③ 等后端文档 → ④ 功能（接 IM/REST）→ ⑤ 浏览器 L2 测修
+① 产品文档 → 【人工确认】→ ② Preview 原型 → 【人工确认】→ ③ 自研后端 → ④ 前端对接 → ⑤ 自测全绿 → ⑥ 人工 sim 验收
 
-- ① 产出 `docs/games/<gameId>/product.md`，格式见 kit `product-doc.template.md`；**产品确认前不得进入 ②**
-- 不得跳过 ② 直接写 IM（除非用户明确要求）
-- 测试用例与视角矩阵在 `spec.md`（④ 前根据 `im.md` 补全）
+详见证：`docs/WORKFLOW-MODES.md`。
 
-## 完成标准（终点）
+- ① 产出 `docs/games/<gameId>/product.md`；**未确认不得进 ②**
+- ② Preview：**须**可阶段跳转 + mock 状态存储（参照 werewords）；改原型须同步 product（反之亦然）；**未确认不得进 ③**
+- ③ 问清本机 `h5-game-server` 路径（**不**自动 clone）→ 只加引擎+契约并 registry
+- ④ App 接 IM/REST/sync；对照契约，不编造字段
+- ⑤ 对照 product / `spec.md` 跑 L2 等直至全绿
+- ⑥ **全绿之后**再请用户用 `sim-lobby` 多窗人工验收；⑤ 未绿不做正式 ⑥
 
-分两种模式（见 kit `docs/WORKFLOW-MODES.md`）：
+不得跳过 ② 直接写后端或接真接口（除非用户明确要求）。
 
-**完整模式终点** — ③ 后端契约齐备后：
+## 完成标准
 
-- **⑤** 浏览器中 `spec.md` 全部 L2 用例（含各视角）全绿
-- 涵盖：① 确认、② UI、④ IM/REST 对接、⑤ 验证通过
+**完整模式**：⑤ 全绿，并完成 ⑥ 人工 sim 验收（用户确认）。
 
-**预览模式终点** — ③ **未齐时允许不到完整终点**：
+**预览模式**（③ 未齐）：①+② 且 ② 已经人工确认即可停；④～⑥ Blocked，不算失败；禁止编造契约。
 
-- 可完成 ① + ②（mock UI 可预览）
-- ④⑤ 标 **Blocked: Backend**，**不算失败**，等待后端；禁止为到终点编造契约
+真机 / App WebView 联调 **不在默认范围**（除非用户另行要求）。
 
-真机 / App WebView 联调 **不在本工具链范围**。
+## App 桥（开发全程禁止改桥文件）
+
+- **`public/core/bridge/hybirdapp-plugin.js`：禁止修改**（含功能开发、修 bug、测修、重构；用户未明确要求时一律不动）
+- 问题改 `src/`、`src/bridge/` 薄封装、或后端仓；**不得**为修业务去改桥
+- scaffold / `sync-kit` 可下发副本；**开发过程中仍禁止改**
+- 无 scaffold 时不得自行创建或重写该文件
 
 ## 流程编排
 
-- 用户输入规则或说「继续」时，优先按 `h5-game-orchestrator` 判断当前步并加载对应 Skill
-- App 桥接：已在 `templates/scaffold/public/core/bridge/` + `src/bridge/`；AI **不得重写协议**
-- 本地服 / `npm start` / `http-config`：已在 `templates/scaffold/`，行为见 `LOCAL-SERVER-SPEC.md`
+- 用户输入规则或说「继续」→ `h5-game-orchestrator`
+- ③ → `h5-game-server` Skill + `docs/BACKEND-SPEC.md`
+- ② → `h5-game-preview`；④ → `h5-game-dev`；⑤ → `h5-game-test`；⑤ 全绿后提示 ⑥
+- 本地服 / `http-config`：见 `LOCAL-SERVER-SPEC.md`
 
 ## 交互原则
 
-- **不知道就说不知道**：无文档依据、无用户确认的信息，**不得猜测或编造**；缺契约/规则/玩法细节时，明确说明「不知道」或标注 **Blocked / 待确认**，向用户或后端索取
-- **先澄清再动手**：gameId、游戏规则、阶段、`product.md` 确认状态、契约是否齐备等 **不明确时**，先向用户 **提问澄清**（可列出选项或待确认项），**确认后再进入对应步骤**，不得带着假设直接写代码或文档
-- **客观讨论**：方案/设计类问题基于事实与仓库约束作答；若与文档、实现或更稳妥实践明显不符，应说明理由并给出建议，**不为一味认同而附和**
-- **反对有边界**：给出替代方案与风险；用户知情并明确要求后，按用户决定执行，不反复纠缠
-- ① 产品文档：不确定处写入 `product.md` §16 待确认项；**用户明确确认前不得进入 ②**
+- **不知道就说不知道**；缺依据标 Blocked / 待确认，向用户索取
+- **先澄清再动手**：gameId、确认门禁、后端路径、契约是否齐备等不明时先问
+- **客观讨论**；反对有边界；用户明确要求后按用户决定执行
+- ① §16 待确认项；**确认前不进 ②**。② 同理
 
-## 契约（只读）
+## 契约
 
-- `rest.md`、`im.md`、fixtures 由 **后端** 维护
-- AI **只读**、审查、引用；Loop 中 **禁止修改**
-- 禁止 AI 撰写或编造 IM/REST 业务字段；无依据时 **不推断**，写入 `CONTRACT_GAPS.md` 或请后端补充
+- 真源在后端仓；与引擎一致，本工具链维护
+- 前端只读引用；缺口写 `CONTRACT_GAPS.md`，后端仓补齐后再进 ④
+- ④ 严格按已发布契约实现，不私自加字段
 
 ## IM
 
-- 解析以 **该游戏 `im.md`** 为唯一依据
-- 禁止从其他游戏复制 IM 解析逻辑
+- 解析以该游戏 `im.md` 为唯一依据；禁止跨游戏抄解析
 
 ## 测试
 
 - 失败先读 `tests/e2e/last-run.json`
-- Loop 成功 = `spec.md` 声明的 **全部 L2 用例（含各视角）** 全绿
-- Loop 迭代只改 `src/` 与 `tests/`（除非用户明确要求改其他）
+- ⑤ 成功 = `spec.md` 全部 L2（含视角）全绿
+- H5 测修改 `src/` / `tests/`；**禁止**改 `hybirdapp-plugin.js`
+- 根因在服务端可改 `h5-game-server`
+- ⑤ 全绿后提示用户做 **⑥ sim 人工验收**
 
 ## 通用踩坑（kit LESSONS）
 
-- **仅 kit 通用层**：`h5-game-kit/docs/LESSONS.md` — 跨游戏 H5/Loop/测试陷阱（兼容、Vite、Playwright、Pinia 等）
-- **游戏专有**不写 LESSONS：IM 字段、玩法、userId 映射 → `spec.md` / `im.md`；产品未定 → `product.md` §16；可选游戏 `AGENT.md`
-- 进入 ④⑤ 前读 kit LESSONS；通用疑难解决后用 `h5-game-lessons` 按 rubric 判断是否追加（跨游戏才记；人工纠正工程类 → 必提议）
+- 仅 kit：`docs/LESSONS.md`；游戏专有写 `spec.md` / `im.md` / `product.md` §16
+- ④⑤ 前读 LESSONS；疑难后用 `h5-game-lessons` 判断是否追加
 
-## 项目环境（每游戏不同）
+## 项目环境
 
-- **dev 环境**（roomId、Centrifugo URL、测试 token、apiBase 等）**无 kit 统一模板**，各项目不一致
-- 需要时 AI **向用户索取**，写入游戏仓约定位置（如 `AGENT.md` 或 `.env.local`）；**不得猜测或编造**
-- **UI 组件库**：不强制；各游戏风格可不同，② 按 `product.md` 自由实现样式
+- roomId / Centrifugo / token / apiBase 等无统一模板；向用户索取，不得编造
+- UI 组件库不强制
 
 ## 参考
 
-- 技术栈：`h5-game-kit/docs/TECH-STACK.md`
-- 工具链：`h5-game-kit`
-- 设计：`h5-game-kit/docs/H5-AI-Loop设计方案.md`
+- `docs/TECH-STACK.md` · `docs/WORKFLOW-MODES.md` · `docs/BACKEND-SPEC.md`
+- `docs/H5-AI设计方案.md` · 仓库 `h5-game-server`

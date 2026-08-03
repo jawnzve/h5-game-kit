@@ -1,6 +1,6 @@
 # Preview UI 规范（流程 ②）
 
-> **适用**：`h5-game-ui` 阶段；**仅 Preview 入口**，App 版与 Playwright E2E **不**使用本壳。  
+> **适用**：`h5-game-preview` 阶段；**仅 Preview 入口**，App 版与 Playwright E2E **不**使用本壳。  
 > **参考实现**：`werewords` 仓库 `src/PreviewApp.vue`、`GameLayout.vue`、`lib/preview-mock-controls.ts`。
 
 ---
@@ -10,7 +10,7 @@
 | 步骤 | Skill | 产出 |
 |------|-------|------|
 | ① | `h5-game-spec` | `product.md` 确认 |
-| **②** | **`h5-game-ui`** | 共用 SFC + **Preview 壳** + App 壳 |
+| **②** | **`h5-game-preview`** | 共用 SFC + **Preview 壳** + App 壳 |
 | ③ | 等待 | `im.md` / `rest.md` / fixtures |
 | ④ | `h5-game-dev` | App 接真数据 |
 | ⑤ | `h5-game-test` | L2 全绿 |

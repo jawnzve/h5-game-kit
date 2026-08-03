@@ -1,5 +1,8 @@
 # Cursor `/loop dynamic` Prompt 模板
 
+用于流程 **⑤**（`h5-game-test`）：对照 product / `spec.md` 跑 Playwright L2 直至全绿。  
+全绿后进入 **⑥ 人工 sim 验收**（本 Loop **不**代替用户点 sim-lobby）。
+
 将 `<gameId>` 替换为实际 gameId，在 Cursor 中执行：
 
 ```
@@ -10,21 +13,28 @@
 
 ```text
 执行 h5-game-test（gameId=<gameId>）：
-1. 阅读 h5-game-kit/skills/h5-game-test/SKILL.md（或项目内 .cursor/skills）
-2. npm run build && 运行 scripts/run-e2e.ps1 或 npx playwright test tests/e2e/<gameId>.spec.js（APP_PATH 为 App 版 app-index，不测 Preview）
+1. 阅读 h5-game-kit/skills/h5-game-test/SKILL.md（或项目内 .cursor/skills）与 docs/WORKFLOW-MODES.md（⑤→⑥）
+2. 对照 docs/games/<gameId>/product.md 与 spec.md；npm run build && 运行 scripts/run-e2e.ps1 或 npx playwright test tests/e2e/<gameId>.spec.js（APP_PATH 为 App 版 app-index，不测 Preview）
 3. 读取 tests/e2e/last-run.json
-4. 若失败：仅修改 src/ 与 tests/，按 h5-game-dev 修复；IM 以该游戏 im.md 为准
-5. 禁止修改 rest.md、im.md、fixtures（后端契约，AI 只读）；不访问后端代码仓库
-6. 后端问题记入 BLOCKED: Backend，交后端同事处理
-7. L2 全绿（含 spec 视角矩阵全部用例）则输出摘要并停止 Loop
-8. 同一用例连续失败 3 次则停止，标注 BLOCKED 原因
+4. 若失败：优先改游戏仓 src/ 与 tests/；按该游戏 im.md（真源在 h5-game-server/docs/games/<gameId>/）
+5. 根因在自研后端时可改 h5-game-server；禁止在前端仓篡改/编造 im.md、rest.md、fixtures
+6. 禁止修改 public/core/bridge/hybirdapp-plugin.js
+7. 无法在自研仓修复的服务端/契约缺口 → BLOCKED: Backend（回 ③ 补齐），勿瞎猜字段
+8. L2 全绿（含 spec 视角矩阵全部用例）则输出摘要、提示用户做 ⑥ sim-lobby 人工验收，并停止 Loop
+9. 同一用例连续失败 3 次则停止，标注 BLOCKED 原因
 ```
 
 ## 停止条件
 
 | 类型 | 条件 |
 |------|------|
-| Success | spec 声明的全部 L2 用例（含各视角）全绿 |
-| Blocked: Backend | 缺契约 / REST 404 / 与后端文档不符 |
+| Success（⑤） | spec 全部 L2（含视角）全绿 → **提示 ⑥**，停止自动 Loop |
+| Blocked: Backend | 缺契约 / 服务不可用 / 与文档不符且自研仓无法当场修好 |
 | Blocked: Spec | 同一用例 3 次仍失败 |
 | User | `/loop stop` |
+
+## 参考
+
+- Skill：`skills/h5-game-test/SKILL.md`
+- 工作流：`docs/WORKFLOW-MODES.md`
+- 后端：`docs/BACKEND-SPEC.md`
