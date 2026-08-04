@@ -131,7 +131,7 @@ Playwright `baseURL` 指向 `npm start` 的静态服（默认端口 3100，见 `
 
 - bridge 能力（IM、getToken、roomInfo）通过 **`src/bridge/`** 封装
 - 实现可复用现有 `hybirdapp-plugin.js` 协议；scaffold 提供 TS 声明与 init 钩子
-- **IM 为真源，sync 为兜底**（与设计方案一致）
+- **IM 为真源，sync 为兜底**
 
 ### 5.4 REST 与埋点
 

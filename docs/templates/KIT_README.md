@@ -9,7 +9,6 @@
 - 技术栈: `{{KitRoot}}\docs\TECH-STACK.md`
 - 自研后端: `{{KitRoot}}\docs\BACKEND-SPEC.md`
 - 本地服: `{{KitRoot}}\docs\LOCAL-SERVER-SPEC.md`
-- 设计: `{{KitRoot}}\docs\H5-AI设计方案.md`
 - 测修 Loop prompt: `{{KitRoot}}\loop\LOOP-PROMPT.md`
 - 通用踩坑（**唯一真源**）: `{{KitRoot}}\docs\LESSONS.md`
 - 本仓镜像: `docs/KIT-LESSONS.md`（sync-kit 更新；勿改镜像）

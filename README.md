@@ -14,8 +14,7 @@ git clone https://github.com/jawnzve/h5-game-kit.git
 ```
 
 **技术栈约定**：Vue 3 + Vite + TypeScript + Pinia — 见 [`docs/TECH-STACK.md`](docs/TECH-STACK.md)。  
-**工作流**：[`docs/WORKFLOW-MODES.md`](docs/WORKFLOW-MODES.md) · **自研后端**：[`docs/BACKEND-SPEC.md`](docs/BACKEND-SPEC.md)  
-完整设计见 [`docs/H5-AI设计方案.md`](docs/H5-AI设计方案.md)。
+**工作流**：[`docs/WORKFLOW-MODES.md`](docs/WORKFLOW-MODES.md) · **自研后端**：[`docs/BACKEND-SPEC.md`](docs/BACKEND-SPEC.md)
 
 ## 目录结构
 
@@ -29,7 +28,6 @@ h5-game-kit/
 │   ├── LOCAL-SERVER-SPEC.md       # 本地服 / http-config / sim-lobby
 │   ├── PREVIEW-UI-SPEC.md         # Preview 外壳规范
 │   ├── LESSONS.md                 # 跨游戏通用踩坑（真源）
-│   ├── H5-AI设计方案.md
 │   └── templates/
 │       ├── KIT_README.md          # → 游戏仓 docs/games/<id>/KIT_README.md
 │       ├── product-doc.template.md / product-doc.example.md

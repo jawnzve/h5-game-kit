@@ -11,9 +11,10 @@
 |------|-------|------|
 | ① | `h5-game-spec` | `product.md` 确认 |
 | **②** | **`h5-game-preview`** | 共用 SFC + **Preview 壳** + App 壳 |
-| ③ | 等待 | `im.md` / `rest.md` / fixtures |
+| ③ | `h5-game-server` | 自研后端引擎 + 契约 |
 | ④ | `h5-game-dev` | App 接真数据 |
 | ⑤ | `h5-game-test` | L2 全绿 |
+| ⑥ | — | sim-lobby 人工验收 |
 
 Preview 用于**人工验收布局与元素**；③ 未齐时可在 ② 结束（预览模式）。
 

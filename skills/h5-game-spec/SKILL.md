@@ -71,4 +71,3 @@ description: >-
 - 模板：`h5-game-kit/docs/templates/product-doc.template.md`
 - 示例：`h5-game-kit/docs/templates/product-doc.example.md`
 - GitLab Mermaid：`docs/LESSONS.md` L-2026-07-15-01
-- 设计方案 §8.1、§9.0
