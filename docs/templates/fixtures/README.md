@@ -1,11 +1,12 @@
 # IM Fixtures
 
-> 真源在自研后端仓 `h5-game-server/docs/games/<gameId>/fixtures/`。  
-> 与引擎实现一并维护；**禁止**在无依据时编造业务字段。
+> **真源**在自研后端仓 `h5-game-server/docs/games/<gameId>/fixtures/`（与引擎、`im.md` 一并维护）。  
+> 游戏前端仓若有 `docs/games/<gameId>/fixtures/`，仅作指针 README，**不以**本目录为真源。  
+> **禁止**在无依据时编造业务字段。
 
-## 命名
+## 命名（后端仓）
 
-`docs/games/<gameId>/fixtures/<phase-or-scenario>.json`
+`h5-game-server/docs/games/<gameId>/fixtures/<phase-or-scenario>.json`
 
 ## 格式
 
@@ -19,4 +20,4 @@
 
 ## 校验
 
-fixture 与 `im.md` / 引擎行为一致；前端 ④ 只读审查。
+fixture 与 `im.md` / 引擎行为一致；前端 ④ 只读；问题回 ③ 改后端仓。

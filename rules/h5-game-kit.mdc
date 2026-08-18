@@ -31,7 +31,7 @@ alwaysApply: true
 
 **完整模式**：⑤ 全绿，并完成 ⑥ 人工 sim 验收（用户确认）。
 
-**预览模式**（③ 未齐）：①+② 且 ② 已经人工确认即可停；④～⑥ Blocked，不算失败；禁止编造契约。
+**预览模式**（③ 未齐）：①+② 且 ② 已经人工确认即可停；③～⑥ 标 Blocked，不算失败；禁止编造契约。
 
 真机 / App WebView 联调 **不在默认范围**（除非用户另行要求）。
 
@@ -58,13 +58,13 @@ alwaysApply: true
 
 ## 契约
 
-- 真源在后端仓；与引擎一致，本工具链维护
-- 前端只读引用；缺口写 `CONTRACT_GAPS.md`，后端仓补齐后再进 ④
+- 契约真源在后端仓；与引擎一致，本工具链在 **③** 维护
+- 前端只读引用；缺口或缺字段 → **回 ③ 改 `h5-game-server`**（契约与引擎），**禁止**在前端仓编造或复制契约来消缺口
 - ④ 严格按已发布契约实现，不私自加字段
 
 ## IM
 
-- 解析以该游戏 `im.md` 为唯一依据；禁止跨游戏抄解析
+- 解析以该游戏后端仓 `im.md` 为唯一依据（路径见 `BACKEND-CONTRACTS.md`）；禁止跨游戏抄解析
 
 ## 测试
 
@@ -76,7 +76,7 @@ alwaysApply: true
 
 ## 通用踩坑（kit LESSONS）
 
-- 仅 kit：`docs/LESSONS.md`；游戏专有写 `spec.md` / `im.md` / `product.md` §16
+- 仅 kit：`docs/LESSONS.md`；游戏前端专有写 `product.md` §16 / `spec.md`；契约与 IM 字段写后端仓 `im.md`（③，路径见 `BACKEND-CONTRACTS.md`）
 - ④⑤ 前读 LESSONS；疑难后用 `h5-game-lessons` 判断是否追加
 
 ## 项目环境

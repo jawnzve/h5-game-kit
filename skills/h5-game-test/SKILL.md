@@ -2,7 +2,7 @@
 name: h5-game-test
 description: >-
   语音房 H5 流程⑤：Playwright L2、读 last-run.json、修至 spec 全绿。
-  全绿后提示⑥人工 sim 验收。自研模式下根因在服务端可改后端仓。
+  全绿后提示⑥人工 sim 验收。根因在服务端 → 改 `h5-game-server`。
 ---
 # h5-game-test
 
@@ -25,8 +25,8 @@ description: >-
 1. `npm run build` + `npm start`（见 `LOCAL-SERVER-SPEC.md`）
 2. `scripts/run-e2e.ps1` 或 `npx playwright test …`
 3. **必读** `tests/e2e/last-run.json`
-4. 失败 → 优先改游戏仓 `src/` / `tests/`；按该游戏 `im.md`
-5. 根因在自研后端 → 可改 `h5-game-server`；外部无法改服务端时标 Blocked
+4. 失败 → 优先改游戏仓 `src/` / `tests/`；按 `BACKEND-CONTRACTS.md` → `h5-game-server/.../im.md`
+5. 根因在服务端 → 改 `h5-game-server`（引擎/契约）；无本机路径或服务不可用时标 Blocked，提示回 ③
 6. **禁止**改 `hybirdapp-plugin.js` 来「修」表现
 7. 重跑直至全绿或 BLOCKED
 8. **全绿后**：明确告知用户进入 **⑥**：用 `public/sim-lobby.html` 多窗对照 product 人工验收
@@ -40,7 +40,7 @@ description: >-
 | 类型 | 条件 |
 |------|------|
 | Success（⑤） | spec 全部 L2（含视角）全绿 → 再提示 ⑥ |
-| Blocked: Backend | 缺契约/服务不可用/与文档不符且无法在自研仓修复 |
+| Blocked: Backend | 缺契约/服务不可用/与文档不符 → 回 ③ 改 `h5-game-server`；无路径或环境挂起时暂停 |
 | Blocked: Spec | 同用例连续失败 3 次 |
 | User | `/loop stop` |
 

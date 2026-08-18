@@ -12,10 +12,10 @@ description: >-
 |------|--------------------------|
 | kit `docs/LESSONS.md` — **跨游戏** H5/Loop/测试陷阱 | 本游戏 IM 字段、阶段、userId → `spec.md` 视角矩阵 |
 | 低版本 WebView、Vite target、Playwright mock 等 | 产品未定 → `product.md` §16 |
-| Pinia / e2e 钩子 / last-run 排查模式 | 后端缺文档 → `CONTRACT_GAPS.md` |
+| Pinia / e2e 钩子 / last-run 排查模式 | 后端缺文档/字段 → 回 ③ 改 `h5-game-server` 契约与引擎 |
 | | 游戏专有上下文 → 游戏仓 `AGENT.md`（`agentmd-creator`） |
 
-**Skill 不会自动记游戏专有坑**；游戏上下文靠 `product.md`、`spec.md`、`im.md` 与可选 `AGENT.md`。
+**Skill 不会自动记游戏专有坑**；游戏上下文靠前端 `product.md` / `spec.md`、后端仓 `im.md`（③）与可选 `AGENT.md`。
 
 ## 何时提议记录
 
@@ -28,11 +28,11 @@ description: >-
 
 - 兼容、构建、mock、Loop 流程类 — **与修了几次无关**
 
-**不因轮次提议**：修了很多轮只说明问题复杂；根因若绑本游戏 `im.md`/玩法 → 只写 `spec.md`，不进 LESSONS。
+**不因轮次提议**：修了很多轮只说明问题复杂；根因若绑本游戏玩法/后端仓 `im.md` → 只写 `spec.md`（或回 ③ 改契约），不进 LESSONS。
 
 **不提议**：
 
-- 单游戏 `im.md` / 玩法 / mock userId 对齐
+- 单游戏后端仓 `im.md` / 玩法 / mock userId 对齐
 - 已在 `TECH-STACK.md` / Rule 写清的
 - 一次性 typo、环境偶发
 

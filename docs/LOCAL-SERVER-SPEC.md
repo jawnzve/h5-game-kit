@@ -59,13 +59,13 @@
 
 ---
 
-## 5. 双版本 UI（与 ②③④ 对齐）
+## 5. 双版本 UI（与 ② / ④ / ⑥ 对齐）
 
-| 版本 | 入口 | ② | ④ |
-|------|------|---|---|
-| **Preview** | preview 页 | 可切换阶段/视角；**须** mock 状态与简单跳转；人工确认原型 | 不接真实 IM/REST |
-| **App** | `app-index.html` | 共用 SFC | ④ 接 IM/REST/sync（local 或远端） |
-| **Sim Lobby** | `sim-lobby.html` | - | ⑥ 全绿后多窗人工验收 |
+| 版本 | 入口 | ② Preview | ④ 对接 | ⑥ 验收 |
+|------|------|-----------|--------|--------|
+| **Preview** | preview 页 | 可切换阶段/视角；**须** mock 状态与简单跳转；人工确认原型 | 不接真实 IM/REST | — |
+| **App** | `app-index.html` | 共用 SFC | 接 IM/REST/sync（local 或远端） | — |
+| **Sim Lobby** | `sim-lobby.html` | — | — | ⑤ 全绿后多窗人工验收 |
 
 详见 `TECH-STACK.md` §9。
 

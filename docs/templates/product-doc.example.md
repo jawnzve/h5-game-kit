@@ -2,7 +2,7 @@
 
 > gameId: `werewords`  
 > 版本: **v2.5-exit-flee**  
-> **不含** IM/REST 字段（见 `im.md` / `rest.md`）
+> **不含** IM/REST 字段（见后端仓 `im.md` / `rest.md`；前端指针：`BACKEND-CONTRACTS.md`）
 
 > **这是 kit 的示例文档**，取自实测游戏「狼人真言」并做精简：保留**章节结构、矩阵表列、交互词表、壳层与布局约定、Preview 附录**等通用写法；对局阶段只完整展开 3 个（`loading` / `ready` / `night`），其余阶段以「结构同上」占位。  
 > 完整版真源：`werewords` 仓 `docs/games/werewords/product.md`。撰写新游戏时以 `product-doc.template.md` 为骨架，以本文件为**详略程度与写法**参照。
@@ -65,7 +65,7 @@
 | **后端** | 全部游戏逻辑真源：阶段流转、胜负、计票/平票/弃权、猜中判定、逃跑与换村长、倒计时、队列等 |
 | **前端** | 按契约展示 UI、采集操作并上报；**不实现、不推断**裁决逻辑；只渲染 IM/sync 下发的状态 |
 
-> ④ 对接时以后端契约为准。冲突记入 `CONTRACT_GAPS.md`，不得前端自行补逻辑。
+> ④ 对接时以自研后端仓契约为准。冲突或缺字段 → 回 **③** 改 `h5-game-server`（引擎 + 契约），不得前端自行补逻辑。
 
 ---
 
@@ -455,7 +455,7 @@ flowchart TB
 
 | 项 | 说明 |
 |----|------|
-| `el-answer-countdown` / 单题 15s | **Preview mock 未实现**；是否展示、文案与超时进历史规则 **④ 待后端契约** |
+| `el-answer-countdown` / 单题 15s | **Preview mock 未实现**；是否展示、文案与超时进历史规则以 **③ 契约 + product** 为准（未定时可先 mock） |
 | day 猜词 vs 提问 | 同一输入框；命中/入队由**后端**判定（前端不推断） |
 | Preview 猜中 mock | 输入与当前咒语**完全一致** → 设猜中者并切 `word-reveal`（便于预览） |
 | Preview 侧栏直切 | 见 [附录 A.1](#a1-preview-mock-行为)；倒计时静态展示、不自动切阶段 |
@@ -506,5 +506,5 @@ product.md  ← ① 产品确认
     ↓
 spec.md     ← ④ 前 L2 用例
     ↓
-② Preview → ③ 契约 → ④ 接入 → ⑤ E2E 全绿
+② Preview → ③ 自研后端（引擎+契约）→ ④ 接入 → ⑤ E2E 全绿 → ⑥ sim 验收
 ```

@@ -32,7 +32,6 @@ h5-game-kit/
 │       ├── KIT_README.md          # → 游戏仓 docs/games/<id>/KIT_README.md
 │       ├── product-doc.template.md / product-doc.example.md
 │       ├── spec.template.md
-│       ├── CONTRACT_GAPS.template.md
 │       ├── BACKEND-CONTRACTS.README.md
 │       └── fixtures/README.md
 ├── skills/
@@ -144,7 +143,7 @@ npx playwright test tests/e2e/<gameId>.spec.js
 | 放在 kit | 放在各游戏仓 |
 |----------|--------------|
 | Skill、Rule、TECH-STACK、Playwright helpers | **`src/`** Vue+Pinia 代码、`dist/` 构建产物 |
-| product/spec **模板** | **`product.md`**、后端 **`im.md` / `rest.md` / fixtures**（格式不固定，后端提供） |
+| product/spec **模板**；`BACKEND-CONTRACTS` 指针模板 | **`product.md`**、**`spec.md`**、**`BACKEND-CONTRACTS.md`**（指向自研 `h5-game-server/docs/games/<id>/`） |
 | 用例 **模板** | `tests/e2e/<gameId>.spec.js` |
 
 ## 升级 kit
@@ -159,7 +158,7 @@ npx playwright test tests/e2e/<gameId>.spec.js
 ```
 
 **会同步**：Rule、Skills（`-InstallSkills`）、e2e helpers、`run-e2e.ps1`、`KIT_VERSION`、**`docs/KIT-LESSONS.md`（只读镜像）**  
-**不会覆盖**：`product.md`、`spec.md`、`<gameId>.spec.js`、`src/`、`public/core/`、`im.md`、fixtures
+**不会覆盖**：`product.md`、`spec.md`、`<gameId>.spec.js`、`src/`、`public/core/`、`BACKEND-CONTRACTS.md`（契约真源在 `h5-game-server`，不在本仓）
 
 **架构定案**：**一游戏一仓库**；`public/core/` 随 scaffold 落在各游戏仓内，**不建** `h5-game-common` 独立包。runtime 升级用 `sync-kit.ps1`（Skills/E2E）+ 必要时手动合并 scaffold 的 `public/core` 片段。
 

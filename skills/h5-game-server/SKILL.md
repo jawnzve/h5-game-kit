@@ -23,7 +23,7 @@ description: >-
 - `internal/games/<gameId>/`（Engine / State / actions / tick）
 - `docs/games/<gameId>/im.md`、`rest.md`、`fixtures/`
 - registry 注册
-- 前端仓 `BACKEND-CONTRACTS.md` / `CONTRACT_GAPS.md` 指针更新为 Ready（契约齐后）
+- 前端仓 `BACKEND-CONTRACTS.md` 指针指向本游戏契约目录
 
 ## 步骤
 
@@ -31,7 +31,7 @@ description: >-
 2. 对照 product 列阶段、动作、结算；实现状态机（单测优先）
 3. 写 `im.md` / `rest.md` / fixtures，与实现一致
 4. 注册 Engine；本地 `docker compose` / 测试按该仓 README
-5. 更新前端 `CONTRACT_GAPS.md` → Ready for ④
+5. 更新前端 `BACKEND-CONTRACTS.md` 路径（若需要）
 6. 提示进入 **④ h5-game-dev**
 
 ## 禁止

@@ -30,7 +30,7 @@
 
 - 某游戏 `im.md` 业务字段、阶段机、视角 userId（→ 游戏 `spec.md` 视角矩阵）
 - 产品规则未定（→ `product.md` §16）
-- 后端缺契约（→ `CONTRACT_GAPS.md`）
+- 后端缺契约/字段（→ 回 ③ 改 `h5-game-server`）
 - typo、本机环境偶发
 
 ---

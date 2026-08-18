@@ -99,7 +99,6 @@ function Init-FromTemplate($templateName, $outName) {
 
 Init-FromTemplate 'product-doc.template.md' 'product.md'
 Init-FromTemplate 'spec.template.md' 'spec.md'
-Init-FromTemplate 'CONTRACT_GAPS.template.md' 'CONTRACT_GAPS.md'
 Init-FromTemplate 'BACKEND-CONTRACTS.README.md' 'BACKEND-CONTRACTS.md'
 Copy-Item (Join-Path $KitRoot 'docs\templates\fixtures\README.md') (Join-Path $docsGame 'fixtures\README.md') -Force
 

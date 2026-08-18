@@ -5,7 +5,7 @@
 
 .DESCRIPTION
   覆盖：Rule、（可选）Skills、e2e helpers、run-e2e.ps1、KIT_VERSION、KIT_README
-  不覆盖：product.md、spec.md、<gameId>.spec.js、src/、im.md、fixtures
+  不覆盖：product.md、spec.md、<gameId>.spec.js、src/、BACKEND-CONTRACTS.md（契约在 h5-game-server）
 
 .EXAMPLE
   & "<kit-root>\scripts\sync-kit.ps1" `
@@ -136,4 +136,4 @@ if (-not (Test-Path $docsGame)) {
 }
 
 Write-Host ""
-Write-Host "Done. NOT overwritten: product.md, spec.md, $GameId.spec.js, src/, im.md, fixtures" -ForegroundColor Green
+Write-Host "Done. NOT overwritten: product.md, spec.md, $GameId.spec.js, src/, BACKEND-CONTRACTS.md" -ForegroundColor Green

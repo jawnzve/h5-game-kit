@@ -5,7 +5,7 @@ export const TOAST_ROOT_KEY: InjectionKey<
   Ref<HTMLElement | null> | HTMLElement | null
 > = Symbol('toastRoot');
 
-/** Toast — 与 http-request.handleApiResponse 的 showToast 对齐 */
+/** Toast */
 export function toast(
   message: string,
   type = 'info',
@@ -47,7 +47,7 @@ export function hideGlobalLoading(): void {
   window.hideLoading?.();
 }
 
-/** 供 http-request.callApi({ loading: apiLoadingAdapter }) 使用 */
+/** 供请求层接全局转圈时使用（当前业务未接 web-loading） */
 export const apiLoadingAdapter = {
   start: () => showGlobalLoading(),
   end: () => hideGlobalLoading(),

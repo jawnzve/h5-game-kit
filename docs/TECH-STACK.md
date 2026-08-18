@@ -108,7 +108,7 @@ Playwright `baseURL` 指向 `npm start` 的静态服（默认端口 3100，见 `
 | **类型来源** | 阶段 enum 对齐 `product.md` §3；IM 类型对齐 `im.md`（④ 后补全） |
 | **共享** | Playwright fixture 与 `types/im.ts` 结构一致，避免双份定义 |
 
-① 产品阶段 **不写** IM 字段类型；③ 契约到齐后在 `types/im.ts` 实现。
+① 产品阶段 **不写** IM 字段类型；③ 在自研后端写齐契约后，前端在 `types/im.ts` 实现。
 
 ---
 
@@ -205,10 +205,10 @@ Playwright `baseURL` 指向 `npm start` 的静态服（默认端口 3100，见 `
 |------|----------------|
 | ① product.md | 阶段 ID、元素 ID（无 IM 类型） |
 | ② h5-game-preview | 共用 SFC + **Preview**（阶段/状态/视角 mock）+ **App 壳**（`app-index`） |
-| ③ 契约 | 后端 im/rest/fixtures |
-| ④ h5-game-dev | App 版接 **远端** IM/REST/sync（按文档，不连本机 API） |
+| ③ 自研后端 | `h5-game-server`：引擎 + im/rest/fixtures |
+| ④ h5-game-dev | App 接 IM/REST/sync（契约只读自后端仓） |
 | ⑤ h5-game-test | Playwright + `last-run.json` |
-
+| ⑥ sim 验收 | 人工多窗 |
 ---
 
 ## 7. 与旧模板（game-template）的关系
