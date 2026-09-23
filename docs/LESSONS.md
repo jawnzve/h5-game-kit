@@ -49,19 +49,23 @@
   - **锚点别靠手写**：改完 `product.md` 一律跑 `npm run docs:anchors`（kit `scripts/fix-product-md-anchors.mjs`，随 `init-game` / `sync-kit` 落地）。它按 Comrak 算法重写全部 `](#…)` 并在存在悬空锚点时退出码 1；提交前可用 `npm run docs:anchors:check` 只校验不改文件
 - **状态**：active
 
-### L-2026-07-15-02 | ② preview | #css #webview #compat
+### L-2026-07-15-02 | ② preview / ③-F | #css #webview #compat #vite #ios #android
 
-- **现象**：App 旧 WebView（尤指 iOS 14.4 及以下 / 旧 Android）上间距消失、毛玻璃无效、卡片比例变形、昵称不省略、描边异常等
-- **根因**：目标环境低于现代 CSS 能力；Flexbox `gap` 需 iOS 14.5+；`aspect-ratio` / `backdrop-filter` / `-webkit-text-stroke` 等支持不齐；flex 子项默认 `min-width:auto` 撑破省略
-- **避免**（② 写样式时默认按此做）：
-  1. **Flex 间距**：不用 `flex + gap`，用子项 `margin`（`:not(:last-child)` 或具名 class）；**Grid + `gap` 可保留**
+- **现象**：App 旧 WebView（尤指 iOS 14.4 及以下 / 旧 Android）上间距消失、毛玻璃无效、卡片比例变形、昵称不省略、描边异常；弹窗偏左上角不居中；筛选/`<button>` 样式被系统外观覆盖；`min()`/`max()` 宽度整段失效；提问人与非提问人底栏高度不一致；3D 翻牌过程一直显示背面等
+- **根因**：目标环境低于现代 CSS 能力；Flexbox `gap` 需 iOS 14.5+；`aspect-ratio` / `backdrop-filter` / `-webkit-text-stroke` 等支持不齐；flex 子项默认 `min-width:auto` 撑破省略；**iOS 14.4 不支持 `inset`（14.5 起才有）**，esbuild CSS 压缩默认会把 `top/right/bottom/left:0` 合并成 `inset:0`；**Android WebView &lt; Chrome 79 不支持 `min()`/`max()`，整条声明被丢弃**；**Grid `gap` 在 Chrome &lt;66 / iOS &lt;12 只认 `grid-gap`**；无全局 `button`/`input` 重置时各平台原生外观/内在行高不同，内容撑开的占位高度会在真机上不等高；旧内核 3D 翻牌需双面显式 `transform` + `translateZ`，面节点上的 `overflow:hidden` 会破坏背面剔除
+- **避免**（②/③-F 写样式时默认按此做）：
+  1. **Flex 间距**：不用 `flex + gap`，用子项 `margin`（`:not(:last-child)` 或具名 class）；**Grid**：写 `grid-gap` **再**写 `gap`；列宽优先 `minmax(0, 1fr)`，勿裸 `1fr`（不换行文字易把列撑不等宽）
   2. **毛玻璃**：先给实色半透明底，再写 `backdrop-filter` + `-webkit-backdrop-filter`，并用 `@supports` 增强
   3. **宽高比**：不用单独依赖 `aspect-ratio`；改显式宽高、`padding-bottom` 百分比，或 JS 按宽算高
   4. **省略/均分**：需省略或均分的 flex 子项设 `min-width: 0`；双按钮均分用 `flex: 1 1 0`，勿 `width: 100%` 硬撑
   5. **描边字**：避免 `-webkit-text-stroke` + `paint-order`；用 `text-shadow` 模拟
-  6. **其它惯例**：可滚容器加 `-webkit-overflow-scrolling: touch`；控件 `appearance: none`；交互区去 tap 高亮 / 禁长按选中（按需）
+  6. **其它惯例**：可滚容器加 `-webkit-overflow-scrolling: touch`；控件 `appearance: none`（建议全局 `button { appearance: none }`）；交互区去 tap 高亮 / 禁长按选中（按需）；筛选等自定义按钮显式重置 `margin`/`font-family`/`background-image`/`-webkit-text-fill-color`/`-webkit-text-size-adjust`
   7. **字重**：**勿**用数值 `font-weight`（如 `400`/`500`/`600`/`700`/`800`）；部分 **Android WebView** 对数值字重映射异常或不生效。常规文案用 `normal`，加粗用 `bold`
-- **参考**：ito `compatibility-notes.md`；witchs-poison / aeroplane-chess / event-anniversary 的 `shared-styles` 注释
+  8. **`inset`**：定位写拆开的 `top`/`right`/`bottom`/`left`，**勿**手写 `inset`；`vite.config` 设 `build.cssTarget: ['safari12','ios12','chrome61']`（或等价旧目标），防止压缩合并回 `inset`。构建后抽查 `dist/**/*.css` 应无裸 `inset:`
+  9. **`min()` / `max()`**：先写普通兜底（如 `width: 92%; max-width: 380px` 或 `padding: 16px`），再写带 `min()`/`max()` 的行；行内 style 也勿单独依赖 `min()`（改成 `width` + `maxWidth`）
+  10. **同构占位高度**：提问人有输入/芯片、非提问人空占位时，**固定 `height`/`min-height`**（勿只靠内容撑开）；`<input>` 在 iOS 上写死 `height`，并清掉默认 `margin`/`font-family`
+  11. **3D 翻牌（旧 iOS）**：场景与内层分别带 `-webkit-perspective` / `-webkit-transform-style: preserve-3d`；正反面都写明确 `transform`（含 `-webkit-`）并用小 `translateZ` 错开；**勿**在面节点上用 `overflow: hidden`（圆角裁切放到内层图）
+- **参考**：ito `compatibility-notes.md`；witchs-poison / aeroplane-chess / event-anniversary 的 `shared-styles` 注释；werewords（2026-09）iOS 14.4 / 安卓 WebView 实机踩坑
 - **状态**：active
 
 ### L-2026-08-03-01 | ② preview | #preview #toast #multi-viewport
