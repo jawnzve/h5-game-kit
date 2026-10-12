@@ -13,7 +13,7 @@
 | 职责 | **仅托管静态资源**（见 §3 静态目录）；**不提供**游戏 REST/IM 业务 API |
 | 环境 | `apiBase` 由 `http-config.js` 按 **访问域名** 选择 |
 | App 联调 | App 版可连 **自研本地后端**（`local` → `http://<hostname>:4000`）或远端预设；见 §4 |
-| ⑥ 人工验收 | `public/sim-lobby.html`：多窗 sim；须在 **⑤ L2 全绿之后**（见 WORKFLOW-MODES） |
+| ⑤ 人工验收 | `public/sim-lobby.html`：多窗 sim；须在 **④ live 全绿之后**（见 WORKFLOW-MODES） |
 
 ---
 
@@ -38,7 +38,7 @@
 | **静态根** | `npm run build` 产出 **`dist/`**；`app.js` 托管 `dist/` |
 | **App 入口** | **`/games/<gameId>/app-index.html`** — WebView / E2E / 正式联调 |
 | **Preview 入口** | **`/preview/preview-index.html`** — ② 可交互原型（阶段跳转+mock 状态），人工确认 |
-| **Sim Lobby** | **`/sim-lobby.html`**（或 `public/sim-lobby.html` 构建产物）— **⑥** 多窗人工验收 |
+| **Sim Lobby** | **`/sim-lobby.html`** — **⑤** 多窗人工产品验收 |
 | 资源 | 图片等放 `public/games/<gameId>/assets/`（构建时拷贝进 `dist/`） |
 
 `app.js` 可做 `/` → 默认游戏 `app-index` 等 redirect；**不注入** API 环境。
@@ -59,13 +59,13 @@
 
 ---
 
-## 5. 双版本 UI（与 ② / ④ / ⑥ 对齐）
+## 5. 双版本 UI（与 ② / ③-F / ⑤ 对齐）
 
-| 版本 | 入口 | ② Preview | ④ 对接 | ⑥ 验收 |
-|------|------|-----------|--------|--------|
-| **Preview** | preview 页 | 可切换阶段/视角；**须** mock 状态与简单跳转；人工确认原型 | 不接真实 IM/REST | — |
-| **App** | `app-index.html` | 共用 SFC | 接 IM/REST/sync（local 或远端） | — |
-| **Sim Lobby** | `sim-lobby.html` | — | — | ⑤ 全绿后多窗人工验收 |
+| 版本 | 入口 | ② Preview | ③-F App | ⑤ 验收 |
+|------|------|-----------|---------|--------|
+| **Preview** | preview 页 | 可切换阶段/视角；mock 状态 | 不接真实 IM/REST | — |
+| **App** | `app-index.html` | 共用 SFC | 接 IM/REST/sync | — |
+| **Sim Lobby** | `sim-lobby.html` | — | — | ④ live 全绿后多窗人工验收 |
 
 详见 `TECH-STACK.md` §9。
 
@@ -107,7 +107,7 @@ Preview（局域网）: http://<局域网IP>:<port>/preview/preview-index.html
 
 ## 7. E2E（Playwright）— 只测 **App 版**
 
-**Preview 仅人工验收 UI，不进 Playwright。** L2 / Loop 一律打开 **App 入口**（含 ④ 功能逻辑与 IM/REST 路径）。
+**Preview 仅人工验收 UI，不进 Playwright Mock L2。** Mock E2E / Loop 打开 **App 入口**（③-F 逻辑路径；`?e2e=1` 无 `live=1`）。④ live 见 `LIVE-INTEGRATION-SPEC.md`。
 
 ```
 1. 测前：npm run build → npm start（静态服托管 dist/）

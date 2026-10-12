@@ -1,0 +1,35 @@
+---
+skills:
+  - h5-game-orchestrator
+  - h5-game-spec
+  - h5-game-preview
+  - h5-game-server
+  - h5-game-admin
+  - h5-game-dev
+  - h5-game-test
+  - h5-game-live-test
+  - h5-game-lessons
+  - h5-game-track
+---
+
+# {{gameName}}
+
+## Tooling
+
+- 开发: `npm run dev`（含 `/sim-lobby.html`）
+- ③ 子门禁 Mock E2E: `npm run build` 再 `npm run test:e2e`（失败读 `tests/e2e/last-run.json`）
+- ④ live: `scripts/run-live-integration.ps1` 或 kit `run-live-integration.ps1`（见 `LIVE-INTEGRATION-SPEC.md`）
+- 后端: `../h5-game-server`（`docker compose up -d --build`）
+- 管理端: `../h5-game-admin`（`:5175`；§1.1 要管理端时）
+
+## Paths
+
+- 契约/引擎: `../h5-game-server/docs/games/{{gameId}}/`
+- 运营（按需）: `../h5-game-server/docs/games/{{gameId}}/ops.md`
+- Kit: `{{KitRoot}}`（`docs/KIT-LESSONS.md` 只读镜像）
+
+## Non-Obvious Rules
+
+- 「继续」→ `h5-game-orchestrator`；流程 **①–⑤**（v0.2）
+- 完整模式：**③ 子门禁绿 + ④ live 绿 + ⑤ sim**
+- 禁止改 `hybirdapp-plugin.js`；禁止编造契约

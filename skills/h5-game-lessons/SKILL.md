@@ -52,7 +52,7 @@ description: >-
 4. 按模板追加到 **活跃条目** 区：
 
 ```markdown
-### L-YYYY-MM-DD-NN | ④ dev | #vite #webview
+### L-YYYY-MM-DD-NN | ③-F dev | #vite #webview
 
 - **现象**：
 - **根因**：
@@ -64,7 +64,7 @@ description: >-
 
 ## 何时读取
 
-- 进入 **④ h5-game-dev**、**⑤ h5-game-test** 前：读 kit `docs/LESSONS.md`（游戏仓可读镜像 `docs/KIT-LESSONS.md`）
+- 进入 **③-F**、**③ 子门禁 Mock E2E**、**④ live** 前：读 kit `docs/LESSONS.md`（游戏仓可读镜像 `docs/KIT-LESSONS.md`）
 - 遇 Blocked / L2 连失败：再读一次相关 `#标签`
 
 ## 从游戏仓贡献（跨游戏坑 → 全员共享）

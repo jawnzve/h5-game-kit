@@ -6,7 +6,9 @@
 .EXAMPLE
   & "<kit-root>\scripts\init-game.ps1" `
     -GameId "my-game" `
-    -Target "<game-repo>"
+    -Target "<game-repo>" `
+    -InstallSkills `
+    -InstallAgentMd
 #>
 param(
     [Parameter(Mandatory = $true)]
@@ -15,9 +17,13 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $Target,
 
+    [string] $GameName = '',
+
     [string] $KitRoot = (Split-Path -Parent $PSScriptRoot),
 
-    [switch] $InstallSkills
+    [switch] $InstallSkills,
+
+    [switch] $InstallAgentMd
 )
 
 $ErrorActionPreference = 'Stop'
@@ -27,6 +33,7 @@ if (-not (Test-Path $Target)) {
 }
 
 $Target = (Resolve-Path $Target).Path
+if (-not $GameName) { $GameName = $GameId }
 Write-Host "Kit:   $KitRoot"
 Write-Host "Game:  $GameId"
 Write-Host "Target: $Target"
@@ -74,6 +81,7 @@ Copy-Item (Join-Path $KitRoot 'tests\e2e\last-run.json.example') (Join-Path $e2e
 $scriptsDst = Join-Path $Target 'scripts'
 New-Item -ItemType Directory -Path $scriptsDst -Force | Out-Null
 Copy-Item (Join-Path $KitRoot 'scripts\run-e2e.ps1') (Join-Path $scriptsDst 'run-e2e.ps1') -Force
+Copy-Item (Join-Path $KitRoot 'scripts\run-live-integration.ps1') (Join-Path $scriptsDst 'run-live-integration.ps1') -Force
 Copy-Item (Join-Path $KitRoot 'scripts\fix-product-md-anchors.mjs') (Join-Path $scriptsDst 'fix-product-md-anchors.mjs') -Force
 
 # playwright config if missing
@@ -92,15 +100,37 @@ function Init-FromTemplate($templateName, $outName) {
     if (Test-Path $out) { return }
     $t = Get-Content $tpl -Raw -Encoding UTF8
     $t = $t -replace '\{\{gameId\}\}', $GameId
-    $t = $t -replace '\{\{gameName\}\}', $GameId
+    $t = $t -replace '\{\{gameName\}\}', $GameName
     $t = $t -replace '\{\{GAME\}\}', ($GameId.ToUpper() -replace '[^A-Z0-9]', '')
     Set-Content -Path $out -Value $t -Encoding UTF8
+}
+
+function Init-RootFromTemplate($templateName, $outName) {
+    $tpl = Join-Path $KitRoot "docs\templates\$templateName"
+    $out = Join-Path $Target $outName
+    if (Test-Path $out) { return }
+    if (-not (Test-Path $tpl)) {
+        Write-Warning "Template missing: $tpl"
+        return
+    }
+    $t = Get-Content $tpl -Raw -Encoding UTF8
+    $t = $t -replace '\{\{gameId\}\}', $GameId
+    $t = $t -replace '\{\{gameName\}\}', $GameName
+    $t = $t -replace '\{\{KitRoot\}\}', $KitRoot
+    $utf8 = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($out, $t, $utf8)
 }
 
 Init-FromTemplate 'product-doc.template.md' 'product.md'
 Init-FromTemplate 'spec.template.md' 'spec.md'
 Init-FromTemplate 'BACKEND-CONTRACTS.README.md' 'BACKEND-CONTRACTS.md'
 Copy-Item (Join-Path $KitRoot 'docs\templates\fixtures\README.md') (Join-Path $docsGame 'fixtures\README.md') -Force
+
+if ($InstallAgentMd) {
+    Init-RootFromTemplate 'AGENT.md.template' 'AGENT.md'
+    Init-RootFromTemplate 'AGENTS.md.template' 'AGENTS.md'
+    Write-Host "AGENT.md / AGENTS.md (skip if already exist)"
+}
 
 # 通用踩坑只读镜像（真源在 kit docs/LESSONS.md）
 $lessonsSrc = Join-Path $KitRoot 'docs\LESSONS.md'

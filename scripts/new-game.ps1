@@ -33,7 +33,7 @@ $initScript = Join-Path $PSScriptRoot 'init-game.ps1'
 
 & $scaffoldScript -GameId $GameId -GameName $GameName -Target $Target -KitRoot $KitRoot -Force:$Force
 
-& $initScript -GameId $GameId -Target $Target -KitRoot $KitRoot -InstallSkills:$InstallSkills
+& $initScript -GameId $GameId -GameName $GameName -Target $Target -KitRoot $KitRoot -InstallSkills:$InstallSkills -InstallAgentMd
 
 Write-Host ""
 Write-Host "new-game complete: scaffold + Kit toolchain for '$GameId'" -ForegroundColor Green

@@ -141,7 +141,7 @@ Playwright `baseURL` 指向 `npm start` 的静态服（默认端口 3100，见 `
 | 运行时 | `public/core/utils/track-log.js` | `window.trackLog`；gameId = `window.__GAME_ID__` |
 | 运行时 | `server-time-sync.js` | `ServerTimeSync`；由 `onAIGameDevice.timestamp` 初始化 |
 | 运行时 | `throttle-utils.js` | `ThrottleUtil.throttleApiCall(key, ms)` |
-| TS 封装 | `src/services/rest.ts`、`track.ts` | REST / 埋点 |
+| TS 封装 | `src/services/rest.ts`、`track.ts` | REST / 埋点通道。事件怎么报见 skill `h5-game-track`（玩法做完、用户给出埋点表后再做，不进 ①–⑤） |
 | 运行时 | `game-sync.js` | 调度壳；默认时机见 `src/lib/game-sync.ts` |
 | TS 封装 | `src/lib/game-sync.ts`、`app-lifecycle.ts` | 注册 handler + 通用时机 |
 | 运行时 | `public/core/components/*.js` | IIFE 全局，`<script>` 先于 Vue 加载（**不改为 Vite TS 包**，见 components/README.md） |
@@ -199,16 +199,18 @@ Playwright `baseURL` 指向 `npm start` 的静态服（默认端口 3100，见 `
 
 ---
 
-## 6. 开发与 AI 流程对齐
+## 6. 开发与 AI 流程对齐（v0.2）
 
 | 步骤 | 技术栈相关产出 |
 |------|----------------|
-| ① product.md | 阶段 ID、元素 ID（无 IM 类型） |
-| ② h5-game-preview | 共用 SFC + **Preview**（阶段/状态/视角 mock）+ **App 壳**（`app-index`） |
-| ③ 自研后端 | `h5-game-server`：引擎 + im/rest/fixtures |
-| ④ h5-game-dev | App 接 IM/REST/sync（契约只读自后端仓） |
-| ⑤ h5-game-test | Playwright + `last-run.json` |
-| ⑥ sim 验收 | 人工多窗 |
+| ① product.md | 阶段 ID、元素 ID、**§1.1 基础设施决策** |
+| ② h5-game-preview | 共用 SFC + **Preview** mock + **App 壳** |
+| ③-S | `h5-game-server`：引擎 + im/rest/fixtures + `go test` |
+| ③-F | App 接 IM/REST/sync（`h5-game-dev`） |
+| ③-A | `h5-game-admin`（§1.1 要管理端时） |
+| ③ 子门禁 | Mock `test:e2e`（玩家 + admin） |
+| ④ live | 真联调自动化（`h5-game-live-test`） |
+| ⑤ sim | 人工多窗产品验收 |
 ---
 
 ## 7. 与旧模板（game-template）的关系

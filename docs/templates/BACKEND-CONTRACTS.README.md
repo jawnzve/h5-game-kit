@@ -10,6 +10,8 @@
 | [`im.md`](../../../../h5-game-server/docs/games/{{gameId}}/im.md) | Centrifugo、channel、信封、snapshot |
 | [`rest.md`](../../../../h5-game-server/docs/games/{{gameId}}/rest.md) | REST：身份、sync、actions |
 | [`fixtures/`](../../../../h5-game-server/docs/games/{{gameId}}/fixtures/) | 与 im 一致的样例 JSON |
+| [`ops.md`](../../../../h5-game-server/docs/games/{{gameId}}/ops.md) | （按需）管理端 API：词库、配置、审核等 |
+| [`docs/sql/`](../../../../h5-game-server/docs/sql/) | （按需）MySQL 建表与种子（后端仓） |
 
 相对路径按游戏仓与 `h5-game-server` 的实际相对位置调整。
 

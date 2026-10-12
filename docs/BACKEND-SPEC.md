@@ -1,33 +1,22 @@
 # 自研后端规格（h5-game-server）
 
 > 多游戏一服务。新游戏 **不**新建后端仓，只加引擎与契约。  
-> 与 Rule / `WORKFLOW-MODES.md` 中的 **③** 对应。
+> 与 **`WORKFLOW-MODES.md` ③-S** 对应。
 
 ## 1. 仓库
 
 | 项 | 说明 |
 |----|------|
 | 默认仓名 | `h5-game-server` |
-| 技术 | Go + Centrifugo + Redis |
-| 获取 | kit **不**自动 clone；进 ③ 时 AI **询问**本机路径，人或自行 clone 后提供 |
+| 技术 | Go + Centrifugo + Redis +（按需）MySQL |
+| 获取 | kit **不**自动 clone；进 ③-S 时 AI **询问**本机路径 |
 
 ## 2. 新游戏要做什么
 
-**只需：**
-
-1. `internal/games/<gameId>/` — 实现 `engine.Engine` / `State`（状态机、裁决、Tick）
-2. `docs/games/<gameId>/` — `im.md`、`rest.md`、`fixtures/`
-3. 在 `cmd/server`（或 registry 装配处）**注册**该 Engine
-
-**不必重做（共用层已有）：**
-
-- `config`：Host / `APP_ENV`、签密钥
-- `auth`：sim / bridge、sim 昵称头像派生
-- 验签、`ALLOW_SIM`
-- `room`：Redis snap、按 roomId 的 TTL、active 集合、version
-- `im`：Centrifugo JWT + publish
-- HTTP 壳：`/api/games/{gameId}/...`
-- TickLoop
+1. `internal/games/<gameId>/` — Engine / State
+2. `docs/games/<gameId>/` — `im.md`、`rest.md`、`fixtures/`；（§1.1 要管理端）`ops.md`
+3. （§1.1 要 MySQL）`docs/sql/`
+4. registry 注册
 
 ## 3. 隔离约定
 
@@ -36,29 +25,40 @@
 | REST | `/api/games/{gameId}/...` |
 | Channel | `game:{gameId}:{roomId}` |
 | Redis | `h5g:{gameId}:{roomId}:snap` |
-| 契约 | `docs/games/{gameId}/` |
 
 ## 4. 写入顺序（强约束）
 
-`改状态 → version++ → Save Redis → publish IM`（先持久化再广播）。
+`改状态 → version++ → Save Redis → publish IM`。
 
-## 5. 房间 TTL（按 roomId，非 matchId）
+## 5. 房间持久化
 
-默认（可用 `ROOM_TTL_*` 覆盖）：
+按 `roomId`。**0 人座位不写 Redis**（sync 无房只回内存空大厅；最后一人离开 / 局终回空立刻 `Delete`）。有人的 ready / 局中 snap TTL **30m**（滑动续期）。`ROOM_TTL_EMPTY` 配置项保留但不再生效。
 
-| 状态 | TTL |
-|------|-----|
-| 局中 / ready 有人 | 1h（写入滑动刷新） |
-| 空房 / settle | 5m |
+## 6. 前端同步约定（供 ③-F 对齐）
 
-`matchId` 仅局内标识，不单独建 Redis key、不做历史归档（除非产品另行要求）。
+IM 单通道；REST 与 IM 同 snapshot DTO；`version` 幂等。
 
-## 6. 前端同步约定（供 ④ 对齐）
+## 7. ③ 子门禁（go test）
 
-- IM **单通道** Centrifugo；REST 与 IM 均可下发同结构 snapshot；`version` 幂等
-- sync 与 IM 同 DTO；断线/回前台/漏消息走 sync
-- 详见 TECH-STACK 与 werewords 实现
+| 项 | 说明 |
+|----|------|
+| 命令 | `go test ./internal/games/<gameId>/... -count=1` |
+| 范围 | 内存引擎；**不连** Redis / IM / MySQL |
+| 与 ④ | **未全绿不得进 ④** |
 
-## 7. Skill
+## 8. ④ live（server 部分）
 
-步骤清单见 `skills/h5-game-server/SKILL.md`。
+| 项 | 说明 |
+|----|------|
+| 命令 | `docker compose --profile test run --rm e2e`（live 编排内必跑） |
+| 规格 | `docs/LIVE-INTEGRATION-SPEC.md` |
+| MySQL | profile `live` + `mysql-test`（按 §1.1 演进） |
+
+## 9. 运营与管理端
+
+- §1.1 要管理端 → **③-S** 写 `ops` + SQL + handler；**③-A** 做 UI
+- Mock admin E2E = **③ 子门禁**；真库 = **④ live**
+
+## 10. Skill
+
+`skills/h5-game-server/SKILL.md`（③-S）、`skills/h5-game-live-test/SKILL.md`（④）

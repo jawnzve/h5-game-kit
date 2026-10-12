@@ -1,6 +1,6 @@
 # h5-game-kit
 
-语音房 H5 游戏的 **工具链起点包**（Skill、Rule、scaffold、文档）：自研后端约定 + ①–⑥ 工作流。
+语音房 H5 游戏的 **工具链起点包**（Skill、Rule、scaffold、文档）：自研后端约定 + **①–⑤** 工作流（v0.2）。
 
 [[_TOC_]]
 
@@ -14,7 +14,7 @@ git clone https://github.com/jawnzve/h5-game-kit.git
 ```
 
 **技术栈约定**：Vue 3 + Vite + TypeScript + Pinia — 见 [`docs/TECH-STACK.md`](docs/TECH-STACK.md)。  
-**工作流**：[`docs/WORKFLOW-MODES.md`](docs/WORKFLOW-MODES.md) · **自研后端**：[`docs/BACKEND-SPEC.md`](docs/BACKEND-SPEC.md)
+**工作流**：[`docs/WORKFLOW-MODES.md`](docs/WORKFLOW-MODES.md) · **真联调④**：[`docs/LIVE-INTEGRATION-SPEC.md`](docs/LIVE-INTEGRATION-SPEC.md) · **自研后端**：[`docs/BACKEND-SPEC.md`](docs/BACKEND-SPEC.md) · **管理端**：[`docs/ADMIN-SPEC.md`](docs/ADMIN-SPEC.md)
 
 ## 目录结构
 
@@ -22,8 +22,10 @@ git clone https://github.com/jawnzve/h5-game-kit.git
 h5-game-kit/
 ├── VERSION / CHANGELOG.md
 ├── docs/
-│   ├── WORKFLOW-MODES.md          # ①–⑥ / 预览·完整终点
+│   ├── WORKFLOW-MODES.md          # ①–⑤ / 预览·完整终点
+│   ├── LIVE-INTEGRATION-SPEC.md   # ④ 真联调自动化
 │   ├── BACKEND-SPEC.md            # 自研后端（多游戏一服务）
+│   ├── ADMIN-SPEC.md              # 管理端（h5-game-admin，③-A）
 │   ├── TECH-STACK.md              # 技术栈与目录约定
 │   ├── LOCAL-SERVER-SPEC.md       # 本地服 / http-config / sim-lobby
 │   ├── PREVIEW-UI-SPEC.md         # Preview 外壳规范
@@ -33,15 +35,19 @@ h5-game-kit/
 │       ├── product-doc.template.md / product-doc.example.md
 │       ├── spec.template.md
 │       ├── BACKEND-CONTRACTS.README.md
+│       ├── AGENT.md.template / AGENTS.md.template
 │       └── fixtures/README.md
 ├── skills/
 │   ├── h5-game-orchestrator/      # 总控
 │   ├── h5-game-spec/              # ① 产品文档
 │   ├── h5-game-preview/           # ② Preview 原型
-│   ├── h5-game-server/            # ③ 自研后端引擎
-│   ├── h5-game-dev/               # ④ 对接
-│   ├── h5-game-test/              # ⑤ L2 测修（全绿后提示 ⑥）
+│   ├── h5-game-server/            # ③-S 后端引擎
+│   ├── h5-game-admin/             # ③-A 管理端（按需）
+│   ├── h5-game-dev/               # ③-F 玩家 App
+│   ├── h5-game-test/              # ③ 子门禁 Mock E2E
+│   ├── h5-game-live-test/         # ④ 真联调
 │   ├── h5-game-lessons/           # 通用踩坑记录
+│   ├── h5-game-track/             # 埋点（玩法完成后，触发词加载）
 │   └── agentmd-creator/           # 可选 AGENT.md
 ├── rules/
 │   └── h5-game-kit.mdc            # → 游戏仓 .cursor/rules/
@@ -50,11 +56,12 @@ h5-game-kit/
 ├── scripts/
 │   ├── new-game.ps1 / scaffold-game.ps1 / init-game.ps1 / sync-kit.ps1
 │   ├── run-e2e.ps1
+│   ├── run-live-integration.ps1
 │   └── fix-product-md-anchors.mjs
 ├── templates/scaffold/            # Vite 工程骨架（new-game 拷贝）
-│   ├── public/sim-lobby.html      # ⑥ 多窗 sim（{{gameId}} 占位）
+│   ├── public/sim-lobby.html      # ⑤ 多窗 sim（{{gameId}} 占位）
 │   ├── public/core/               # 桥 / http / UI 组件（禁改 hybirdapp-plugin.js）
-│   ├── docs/APP-SYNC-NOTES.md     # ④ 从 werewords 回拷说明
+│   ├── docs/APP-SYNC-NOTES.md     # ③-F 从 werewords 回拷说明
 │   └── src/lib/throttle.ts, server-time.ts, …
 ├── playwright.config.template.js
 └── package.template.json
@@ -85,7 +92,8 @@ h5-game-kit/
 & "<kit-root>\scripts\init-game.ps1" `
   -GameId "my-game" `
   -Target "<game-repo>" `
-  -InstallSkills
+  -InstallSkills `
+  -InstallAgentMd
 ```
 ### 2. 开始开发（推荐说法）
 
@@ -95,7 +103,7 @@ h5-game-kit/
 新游戏 my-game，规则是：……
 ```
 
-由 **`h5-game-orchestrator`** 判断当前步并加载对应 Skill（①→②→…）。
+由 **`h5-game-orchestrator`** 判断当前步并加载对应 Skill（①→②→③→④→⑤）。
 
 ### 3. 安装 Skill（若 init 未加 -InstallSkills）
 
@@ -105,21 +113,21 @@ h5-game-kit/
 | **复制到个人** | 复制 `skills/*` → `%USERPROFILE%\.cursor\skills\` |
 | **复制到项目** | 复制 `skills/*` → `<game-repo>/.cursor/skills/` |
 
-### 4. 六步流程与两种终点
+### 4. 五步流程与两种终点
 
-| 步 | Skill |
-|----|-------|
-| ① 产品文档 → 人工确认 | `h5-game-spec` |
+| 步 | Skill / 动作 |
+|----|----------------|
+| ① 产品文档 + §1.1 基础设施 → 人工确认 | `h5-game-spec` |
 | ② Preview 原型 → 人工确认 | `h5-game-preview` |
-| ③ 自研后端 | `h5-game-server`（先问本机后端路径） |
-| ④ 功能对接 | `h5-game-dev` |
-| ⑤ L2 测修全绿 | `h5-game-test` |
-| ⑥ 人工 sim 验收 | 用户用 `sim-lobby.html`（⑤ 之后） |
+| ③ 自主开发（③-S / ③-F / ③-A）+ **子门禁 Mock 全绿** | `h5-game-server` · `h5-game-dev` · `h5-game-admin` · `h5-game-test` |
+| ④ **真联调 live 全绿**（技术交付） | `h5-game-live-test` · `run-live-integration.ps1` |
+| ⑤ **人工 sim**（产品终点） | `sim-lobby.html`（④ 全绿后） |
 
 | 模式 | 条件 | 终点 |
 |------|------|------|
 | **预览** | ③ 未齐 | ② 已人工确认即可停 |
-| **完整** | ③ 齐 | ⑤ 全绿 + ⑥ 人工 sim |
+| **完整（技术）** | ③ 齐 | ③ 子门禁 + **④ live 全绿** |
+| **完整（产品）** | ③ 齐 | 上述 + **⑤ sim 通过** |
 
 详见 [`docs/WORKFLOW-MODES.md`](docs/WORKFLOW-MODES.md)、[`docs/BACKEND-SPEC.md`](docs/BACKEND-SPEC.md)。
 

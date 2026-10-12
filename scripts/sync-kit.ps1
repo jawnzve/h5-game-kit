@@ -83,8 +83,9 @@ Write-Host "[sync] tests/e2e/helpers/*, last-run.json.example"
 $scriptsDst = Join-Path $Target 'scripts'
 New-Item -ItemType Directory -Path $scriptsDst -Force | Out-Null
 Copy-Item (Join-Path $KitRoot 'scripts\run-e2e.ps1') (Join-Path $scriptsDst 'run-e2e.ps1') -Force
+Copy-Item (Join-Path $KitRoot 'scripts\run-live-integration.ps1') (Join-Path $scriptsDst 'run-live-integration.ps1') -Force
 Copy-Item (Join-Path $KitRoot 'scripts\fix-product-md-anchors.mjs') (Join-Path $scriptsDst 'fix-product-md-anchors.mjs') -Force
-Write-Host "[sync] scripts/run-e2e.ps1, fix-product-md-anchors.mjs"
+Write-Host "[sync] scripts/run-e2e.ps1, run-live-integration.ps1, fix-product-md-anchors.mjs"
 
 # 通用 CSS（kit-scrollbar 等，不覆盖游戏自有 public/css）
 $cssSrc = Join-Path $KitRoot 'templates\scaffold\public\css'

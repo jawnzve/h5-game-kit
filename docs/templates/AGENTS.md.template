@@ -1,0 +1,12 @@
+# {{gameName}} — Codex 入口
+
+**真源在 [`AGENT.md`](./AGENT.md)**（工具命令、路径、本游戏约定）。  
+改上下文只改 `AGENT.md`，本文件不维护第二份正文。
+
+**须一并遵守（Cursor rule，无第二份副本）：**  
+[`.cursor/rules/h5-game-kit.mdc`](./.cursor/rules/h5-game-kit.mdc)
+
+**Skills 真源：** [`.cursor/skills/`](./.cursor/skills/)  
+本仓 `.agents/skills` 为指向该目录的链接（Codex 扫描路径）；勿在 `.agents/skills` 下另写一份。
+
+触发「继续」等时，按 `AGENT.md` 所列 skill 名加载对应 `SKILL.md`。

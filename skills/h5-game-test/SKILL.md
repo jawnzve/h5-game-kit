@@ -1,55 +1,49 @@
 ---
 name: h5-game-test
 description: >-
-  语音房 H5 流程⑤：Playwright L2、读 last-run.json、修至 spec 全绿。
-  全绿后提示⑥人工 sim 验收。根因在服务端 → 改 `h5-game-server`。
+  语音房 H5 流程③ 子门禁（玩家）：Playwright Mock L2、读 last-run.json、修至 spec 全绿。
+  全绿后与其他 ③ 子门禁一并进入 ④ live。根因在服务端 → 改 h5-game-server。
 ---
 # h5-game-test
 
 ## 流程位置
 
-**⑤ 自动测试并修 bug** — ④ 完成后。  
-**⑤ 全绿 ≠ 全部结束**：须提示用户做 **⑥ sim-lobby 人工验收**（对照 product）。
+**③-F 子门禁（Mock）** — ③-F App 对接完成后。  
+**不是**最终交付门禁；**④ live** 才是真联调验收。Mock 全绿 + ③-S/③-A 子门禁全绿 → 进 **④**。
 
 ## 前置
 
-- `tests/e2e/<gameId>.spec.js` 与 helpers
-- **`APP_PATH`** = App `/games/<gameId>/app-index.html?e2e=1`（**不是** Preview）
-- `spec.md` L2 + 视角矩阵；契约与 fixtures 就位
-- 对照 **product.md** 逐步覆盖主流程与关键分支
+- `tests/e2e/<gameId>.spec.js`；**Mock** API/IM（`mock-im.js`、`mock-game-api.js`）
+- `APP_PATH` = App `app-index.html?e2e=1`（**不是** Preview，**不是** `live=1`）
+- `spec.md` L2 + 视角矩阵
 
 ## 步骤
 
-0. 读 `docs/LESSONS.md`；视角看 `spec.md` / product
-0b. spec 有表但用例未写 → 先补 Playwright（goto App）
-1. `npm run build` + `npm start`（见 `LOCAL-SERVER-SPEC.md`）
-2. `scripts/run-e2e.ps1` 或 `npx playwright test …`
+0. 读 `docs/LESSONS.md`、`spec.md`
+1. `npm run build` + `npm start`
+2. `npm run test:e2e` 或 `scripts/run-e2e.ps1`
 3. **必读** `tests/e2e/last-run.json`
-4. 失败 → 优先改游戏仓 `src/` / `tests/`；按 `BACKEND-CONTRACTS.md` → `h5-game-server/.../im.md`
-5. 根因在服务端 → 改 `h5-game-server`（引擎/契约）；无本机路径或服务不可用时标 Blocked，提示回 ③
-6. **禁止**改 `hybirdapp-plugin.js` 来「修」表现
-7. 重跑直至全绿或 BLOCKED
-8. **全绿后**：明确告知用户进入 **⑥**：用 `public/sim-lobby.html` 多窗对照 product 人工验收
-
-## 多视角
-
-- 不同 `mockBridge.userId` = 不同视角；Loop 全绿 = spec **每个视角用例**都过
+4. 失败 → 改 `src/` / `tests/`；契约缺口 → **③-S**
+5. 全绿 → 确认 ③-S（及 ③-A）子门禁 → 提示 **④ `h5-game-live-test`**
 
 ## 停止条件
 
 | 类型 | 条件 |
 |------|------|
-| Success（⑤） | spec 全部 L2（含视角）全绿 → 再提示 ⑥ |
-| Blocked: Backend | 缺契约/服务不可用/与文档不符 → 回 ③ 改 `h5-game-server`；无路径或环境挂起时暂停 |
-| Blocked: Spec | 同用例连续失败 3 次 |
-| User | `/loop stop` |
+| Success（③ 子门禁） | spec L2 全绿 → 检查 ③ 各轨 → 进 **④** |
+| Blocked | 契约/环境/连续 3 次失败 |
 
 ## 禁止
 
-- 修改 `hybirdapp-plugin.js`
-- 在前端仓改 `rest.md` / `im.md` / fixtures
-- ⑤ 未绿宣称 ⑥ 完成
+- 用 Mock E2E **代替** ④ live
+- Mock 未绿进 ④ 或宣称完整模式技术交付完成
+- 改 `hybirdapp-plugin.js`
 
 ## Helpers
 
 - `tests/e2e/helpers/mock-im.js`、`mock-bridge.js`、`capture-logs.js`
+
+## 参考
+
+- `docs/WORKFLOW-MODES.md`
+- ④：`skills/h5-game-live-test/SKILL.md`

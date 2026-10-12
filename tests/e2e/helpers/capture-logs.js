@@ -44,7 +44,11 @@ function createLogCollector(page) {
       log.errors = (testInfo.errors || []).map((e) => String(e.message || e));
 
       fs.mkdirSync(path.dirname(OUT), { recursive: true });
-      fs.writeFileSync(OUT, JSON.stringify(log, null, 2), 'utf8');
+      try {
+        fs.writeFileSync(OUT, JSON.stringify(log, null, 2), 'utf8');
+      } catch {
+        /* Windows 下 last-run.json 偶发被占用，不把已通过的用例判失败 */
+      }
     },
   };
 }
